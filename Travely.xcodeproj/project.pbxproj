@@ -6,76 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXContainerItemProxy section */
-		D4BBDC6E2D6BDBAA005BEB19 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4BBDC4F2D6BDBA7005BEB19 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4BBDC562D6BDBA7005BEB19;
-			remoteInfo = Travely;
-		};
-		D4BBDC782D6BDBAA005BEB19 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4BBDC4F2D6BDBA7005BEB19 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4BBDC562D6BDBA7005BEB19;
-			remoteInfo = Travely;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		D4BBDC572D6BDBA7005BEB19 /* Travely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Travely.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4BBDC6D2D6BDBAA005BEB19 /* TravelyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TravelyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D4BBDC772D6BDBAA005BEB19 /* TravelyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TravelyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4A4E72E2D94FFCE00882A19 /* Travely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Travely.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D4BBDC7F2D6BDBAA005BEB19 /* Exceptions for "Travely" folder in "Travely" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = D4BBDC562D6BDBA7005BEB19 /* Travely */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D4BBDC592D6BDBA7005BEB19 /* Travely */ = {
+		D4A4E7302D94FFCE00882A19 /* Travely */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				D4BBDC7F2D6BDBAA005BEB19 /* Exceptions for "Travely" folder in "Travely" target */,
-			);
 			path = Travely;
-			sourceTree = "<group>";
-		};
-		D4BBDC702D6BDBAA005BEB19 /* TravelyTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TravelyTests;
-			sourceTree = "<group>";
-		};
-		D4BBDC7A2D6BDBAA005BEB19 /* TravelyUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TravelyUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D4BBDC542D6BDBA7005BEB19 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC6A2D6BDBAA005BEB19 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC742D6BDBAA005BEB19 /* Frameworks */ = {
+		D4A4E72B2D94FFCE00882A19 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -85,22 +29,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D4BBDC4E2D6BDBA7005BEB19 = {
+		D4A4E7252D94FFCE00882A19 = {
 			isa = PBXGroup;
 			children = (
-				D4BBDC592D6BDBA7005BEB19 /* Travely */,
-				D4BBDC702D6BDBAA005BEB19 /* TravelyTests */,
-				D4BBDC7A2D6BDBAA005BEB19 /* TravelyUITests */,
-				D4BBDC582D6BDBA7005BEB19 /* Products */,
+				D4A4E7302D94FFCE00882A19 /* Travely */,
+				D4A4E72F2D94FFCE00882A19 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D4BBDC582D6BDBA7005BEB19 /* Products */ = {
+		D4A4E72F2D94FFCE00882A19 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D4BBDC572D6BDBA7005BEB19 /* Travely.app */,
-				D4BBDC6D2D6BDBAA005BEB19 /* TravelyTests.xctest */,
-				D4BBDC772D6BDBAA005BEB19 /* TravelyUITests.xctest */,
+				D4A4E72E2D94FFCE00882A19 /* Travely.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,134 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D4BBDC562D6BDBA7005BEB19 /* Travely */ = {
+		D4A4E72D2D94FFCE00882A19 /* Travely */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D4BBDC802D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "Travely" */;
+			buildConfigurationList = D4A4E7412D94FFD200882A19 /* Build configuration list for PBXNativeTarget "Travely" */;
 			buildPhases = (
-				D4BBDC532D6BDBA7005BEB19 /* Sources */,
-				D4BBDC542D6BDBA7005BEB19 /* Frameworks */,
-				D4BBDC552D6BDBA7005BEB19 /* Resources */,
+				D4A4E72A2D94FFCE00882A19 /* Sources */,
+				D4A4E72B2D94FFCE00882A19 /* Frameworks */,
+				D4A4E72C2D94FFCE00882A19 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D4BBDC592D6BDBA7005BEB19 /* Travely */,
+				D4A4E7302D94FFCE00882A19 /* Travely */,
 			);
 			name = Travely;
 			packageProductDependencies = (
 			);
 			productName = Travely;
-			productReference = D4BBDC572D6BDBA7005BEB19 /* Travely.app */;
+			productReference = D4A4E72E2D94FFCE00882A19 /* Travely.app */;
 			productType = "com.apple.product-type.application";
-		};
-		D4BBDC6C2D6BDBAA005BEB19 /* TravelyTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D4BBDC852D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "TravelyTests" */;
-			buildPhases = (
-				D4BBDC692D6BDBAA005BEB19 /* Sources */,
-				D4BBDC6A2D6BDBAA005BEB19 /* Frameworks */,
-				D4BBDC6B2D6BDBAA005BEB19 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D4BBDC6F2D6BDBAA005BEB19 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D4BBDC702D6BDBAA005BEB19 /* TravelyTests */,
-			);
-			name = TravelyTests;
-			packageProductDependencies = (
-			);
-			productName = TravelyTests;
-			productReference = D4BBDC6D2D6BDBAA005BEB19 /* TravelyTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		D4BBDC762D6BDBAA005BEB19 /* TravelyUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D4BBDC882D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "TravelyUITests" */;
-			buildPhases = (
-				D4BBDC732D6BDBAA005BEB19 /* Sources */,
-				D4BBDC742D6BDBAA005BEB19 /* Frameworks */,
-				D4BBDC752D6BDBAA005BEB19 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D4BBDC792D6BDBAA005BEB19 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D4BBDC7A2D6BDBAA005BEB19 /* TravelyUITests */,
-			);
-			name = TravelyUITests;
-			packageProductDependencies = (
-			);
-			productName = TravelyUITests;
-			productReference = D4BBDC772D6BDBAA005BEB19 /* TravelyUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		D4BBDC4F2D6BDBA7005BEB19 /* Project object */ = {
+		D4A4E7262D94FFCE00882A19 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
-					D4BBDC562D6BDBA7005BEB19 = {
+					D4A4E72D2D94FFCE00882A19 = {
 						CreatedOnToolsVersion = 16.2;
-					};
-					D4BBDC6C2D6BDBAA005BEB19 = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = D4BBDC562D6BDBA7005BEB19;
-					};
-					D4BBDC762D6BDBAA005BEB19 = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = D4BBDC562D6BDBA7005BEB19;
 					};
 				};
 			};
-			buildConfigurationList = D4BBDC522D6BDBA7005BEB19 /* Build configuration list for PBXProject "Travely" */;
+			buildConfigurationList = D4A4E7292D94FFCE00882A19 /* Build configuration list for PBXProject "Travely" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = D4BBDC4E2D6BDBA7005BEB19;
+			mainGroup = D4A4E7252D94FFCE00882A19;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = D4BBDC582D6BDBA7005BEB19 /* Products */;
+			productRefGroup = D4A4E72F2D94FFCE00882A19 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D4BBDC562D6BDBA7005BEB19 /* Travely */,
-				D4BBDC6C2D6BDBAA005BEB19 /* TravelyTests */,
-				D4BBDC762D6BDBAA005BEB19 /* TravelyUITests */,
+				D4A4E72D2D94FFCE00882A19 /* Travely */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D4BBDC552D6BDBA7005BEB19 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC6B2D6BDBAA005BEB19 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC752D6BDBAA005BEB19 /* Resources */ = {
+		D4A4E72C2D94FFCE00882A19 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -245,21 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D4BBDC532D6BDBA7005BEB19 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC692D6BDBAA005BEB19 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4BBDC732D6BDBAA005BEB19 /* Sources */ = {
+		D4A4E72A2D94FFCE00882A19 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -268,75 +124,8 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		D4BBDC6F2D6BDBAA005BEB19 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4BBDC562D6BDBA7005BEB19 /* Travely */;
-			targetProxy = D4BBDC6E2D6BDBAA005BEB19 /* PBXContainerItemProxy */;
-		};
-		D4BBDC792D6BDBAA005BEB19 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4BBDC562D6BDBA7005BEB19 /* Travely */;
-			targetProxy = D4BBDC782D6BDBAA005BEB19 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		D4BBDC812D6BDBAA005BEB19 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Travely/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.Travely;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D4BBDC822D6BDBAA005BEB19 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Travely/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.Travely;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		D4BBDC832D6BDBAA005BEB19 /* Debug */ = {
+		D4A4E73F2D94FFD200882A19 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -399,7 +188,7 @@
 			};
 			name = Debug;
 		};
-		D4BBDC842D6BDBAA005BEB19 /* Release */ = {
+		D4A4E7402D94FFD200882A19 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -455,114 +244,84 @@
 			};
 			name = Release;
 		};
-		D4BBDC862D6BDBAA005BEB19 /* Debug */ = {
+		D4A4E7422D94FFD200882A19 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.TravelyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.Travely;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Travely.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Travely";
 			};
 			name = Debug;
 		};
-		D4BBDC872D6BDBAA005BEB19 /* Release */ = {
+		D4A4E7432D94FFD200882A19 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.TravelyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.Travely;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Travely.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Travely";
-			};
-			name = Release;
-		};
-		D4BBDC892D6BDBAA005BEB19 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.TravelyUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Travely;
-			};
-			name = Debug;
-		};
-		D4BBDC8A2D6BDBAA005BEB19 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = AtherAhmed.TravelyUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Travely;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D4BBDC522D6BDBA7005BEB19 /* Build configuration list for PBXProject "Travely" */ = {
+		D4A4E7292D94FFCE00882A19 /* Build configuration list for PBXProject "Travely" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D4BBDC832D6BDBAA005BEB19 /* Debug */,
-				D4BBDC842D6BDBAA005BEB19 /* Release */,
+				D4A4E73F2D94FFD200882A19 /* Debug */,
+				D4A4E7402D94FFD200882A19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D4BBDC802D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "Travely" */ = {
+		D4A4E7412D94FFD200882A19 /* Build configuration list for PBXNativeTarget "Travely" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D4BBDC812D6BDBAA005BEB19 /* Debug */,
-				D4BBDC822D6BDBAA005BEB19 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D4BBDC852D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "TravelyTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D4BBDC862D6BDBAA005BEB19 /* Debug */,
-				D4BBDC872D6BDBAA005BEB19 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D4BBDC882D6BDBAA005BEB19 /* Build configuration list for PBXNativeTarget "TravelyUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D4BBDC892D6BDBAA005BEB19 /* Debug */,
-				D4BBDC8A2D6BDBAA005BEB19 /* Release */,
+				D4A4E7422D94FFD200882A19 /* Debug */,
+				D4A4E7432D94FFD200882A19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = D4BBDC4F2D6BDBA7005BEB19 /* Project object */;
+	rootObject = D4A4E7262D94FFCE00882A19 /* Project object */;
 }

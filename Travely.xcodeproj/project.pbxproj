@@ -25,6 +25,7 @@
 		0235797B2DA0A08D00D2A776 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0235797A2DA0A08D00D2A776 /* FirebaseStorage */; };
 		0235797D2DA0A08D00D2A776 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 0235797C2DA0A08D00D2A776 /* FirebaseStorageCombine-Community */; };
 		0235797F2DA0A08D00D2A776 /* FirebaseVertexAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0235797E2DA0A08D00D2A776 /* FirebaseVertexAI */; };
+		02D962792DB1E40800F2F7A2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 02D962782DB1E40800F2F7A2 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 				023579712DA0A08D00D2A776 /* FirebaseInstallations in Frameworks */,
 				023579632DA0A08D00D2A776 /* FirebaseAppCheck in Frameworks */,
 				023579672DA0A08D00D2A776 /* FirebaseAuth in Frameworks */,
+				02D962792DB1E40800F2F7A2 /* FirebaseFirestore in Frameworks */,
 				023579732DA0A08D00D2A776 /* FirebaseMLModelDownloader in Frameworks */,
 				0235797B2DA0A08D00D2A776 /* FirebaseStorage in Frameworks */,
 				0235797D2DA0A08D00D2A776 /* FirebaseStorageCombine-Community in Frameworks */,
@@ -135,6 +137,7 @@
 				0235797A2DA0A08D00D2A776 /* FirebaseStorage */,
 				0235797C2DA0A08D00D2A776 /* FirebaseStorageCombine-Community */,
 				0235797E2DA0A08D00D2A776 /* FirebaseVertexAI */,
+				02D962782DB1E40800F2F7A2 /* FirebaseFirestore */,
 			);
 			productName = Travely;
 			productReference = D4A4E72E2D94FFCE00882A19 /* Travely.app */;
@@ -500,6 +503,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0235795B2DA0A08D00D2A776 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseVertexAI;
+		};
+		02D962782DB1E40800F2F7A2 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0235795B2DA0A08D00D2A776 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -43,7 +43,7 @@ struct HomeView: View {
                     
                     // Trip list
                     ScrollView {
-                        LazyVStack(spacing: 12) {
+                        LazyVStack(spacing: 16) {
                             ForEach(trips) { trip in
                                 NavigationLink(destination: Text(trip.destination)) {
                                     TripCard(trip: trip)
@@ -51,7 +51,7 @@ struct HomeView: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.top, 8)
+                        .padding(.top, 12)
                     }
                     
                     Spacer()
@@ -70,32 +70,32 @@ struct TripCard: View {
     let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             Image(trip.imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 48, height: 48)
-                .cornerRadius(6)
+                .frame(width: 60, height: 60)
+                .cornerRadius(8)
             
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(trip.destination)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 17, weight: .medium))
                     .foregroundColor(.white)
                 Text(trip.date)
-                    .font(.system(size: 14))
+                    .font(.system(size: 15))
                     .foregroundColor(.gray)
             }
-            
+
             Spacer()
             
             Image(systemName: "chevron.right")
                 .foregroundColor(accentColor)
                 .font(.system(size: 14, weight: .medium))
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
         .background(Color.white.opacity(0.05))
-        .cornerRadius(8)
+        .cornerRadius(10)
     }
 }
 

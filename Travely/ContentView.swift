@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var viewModel: AppViewModel
+    @StateObject private var viewModel = AppViewModel()
     
     var body: some View {
         Group {
             if viewModel.isAuthenticated {
-                HomeView()
+                MainTabView()
+                    .environmentObject(viewModel)
+                    .preferredColorScheme(.dark)
             } else {
                 LoginView()
+                    .environmentObject(viewModel)
+                    .preferredColorScheme(.dark)
             }
         }
     }
@@ -23,5 +27,4 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppViewModel())
 }

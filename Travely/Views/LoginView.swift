@@ -29,11 +29,7 @@ struct LoginView: View {
                 .edgesIgnoringSafeArea(.all)
 
             VStack {
-                if viewModel.isAuthenticated {
-                    Text("Welcome!")
-                        .font(.largeTitle)
-                        .padding()
-                } else {
+                if !viewModel.isAuthenticated {
                     Text("Travely")
                         .font(.custom("Inter-Regular", size: 64))
                         .fontWeight(.black)
@@ -43,11 +39,15 @@ struct LoginView: View {
                     if biometricsAvailable {
                         Button(action: {
                             if viewModel.biometricEnabled {
+                                // Disable Face ID
                                 viewModel.biometricEnabled = false
-                                    print("🔓 Face ID disabled")
-                                } else {
-                                    authenticateBiometrics()
-                                }
+                                viewModel.isBioAuth = false
+                                print("✅ Face ID disabled")
+                            } else {
+                                // Just enable Face ID for next sign-in
+                                viewModel.biometricEnabled = true
+                                print("✅ Face ID enabled for next sign-in")
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "faceid")
@@ -108,16 +108,19 @@ struct LoginView: View {
                 DispatchQueue.main.async {
                     if success {
                         print("✅ Biometric auth success")
-                        viewModel.biometricEnabled = true
-                        viewModel.isBioAuth = true
-                        
+                        // Don't set biometricEnabled here, it's a user preference
+                        self.viewModel.isBioAuth = true
                     } else {
                         print("❌ Biometric auth failed:", error?.localizedDescription ?? "Unknown error")
+                        // On failure, reset the state
+                        self.viewModel.isBioAuth = false
                     }
                 }
             }
         } else {
             print("❌ Biometrics not available:", error?.localizedDescription ?? "Unknown error")
+            viewModel.biometricEnabled = false
+            viewModel.isBioAuth = false
         }
     }
 
@@ -165,13 +168,18 @@ struct LoginView: View {
                 accessToken: user.accessToken.tokenString
             )
 
-            Auth.auth().signIn(with: credential) { authResult, error in
+            Auth.auth().signIn(with: credential) { [self] authResult, error in
                 if let error {
                     print("❌ Firebase sign‑in failed:", error.localizedDescription)
                     return
                 }
                 print("✅ Firebase sign‑in OK for", authResult?.user.uid ?? "")
                 viewModel.signIn(with: authResult?.user.displayName)
+                
+                // If biometrics is enabled, prompt for Face ID
+                if viewModel.biometricEnabled {
+                    authenticateBiometrics()
+                }
             }
         }
     }

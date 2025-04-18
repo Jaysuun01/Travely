@@ -13,25 +13,19 @@ import LocalAuthentication
 
 struct RootView: View {
     @EnvironmentObject var viewModel: AppViewModel
-    
+
     var body: some View {
         Group {
-            if viewModel.isAuthenticated {
-                if viewModel.biometricEnabled && !viewModel.isBioAuth {
-                    // Show login view until Face ID succeeds
-                    LoginView()
-                        .onAppear {
-                            authenticateBiometrics()
-                        }
-                } else {
-                    ContentView()
-                }
+            if viewModel.isAuthenticated && (!viewModel.biometricEnabled || viewModel.isBioAuth) {
+                ContentView()
             } else {
                 LoginView()
             }
         }
         .onAppear {
-            viewModel.initializeAuthState()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                viewModel.initializeAuthState()
+            }
         }
     }
     

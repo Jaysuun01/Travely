@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D4B7F4802DA08EBE0061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F47A2DA08EBC0061E9F7 /* Travely.xcdatamodeld */; };
 		D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */; };
 		D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC682DB093F800A3E3BB /* GoogleSignIn */; };
 		D4C3DC6B2DB093F800A3E3BB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC6A2DB093F800A3E3BB /* GoogleSignInSwift */; };
@@ -170,7 +169,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */,
-				D4B7F4802DA08EBE0061E9F7 /* Travely.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,7 +303,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = 3449PUSCGX;
+				DEVELOPMENT_TEAM = 72P8HX4Q5J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -320,7 +318,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.jason;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -337,7 +335,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = 3449PUSCGX;
+				DEVELOPMENT_TEAM = 72P8HX4Q5J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -352,7 +350,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.jason;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

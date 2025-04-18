@@ -1,20 +1,27 @@
-//
-//  TravelyApp.swift
-//  Travely
-//
-//  Created by Ather Ahmed on 3/26/25.
-//
-
 import SwiftUI
+import FirebaseCore
+
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+  func application(_ application: UIApplication,
+                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    FirebaseApp.configure()
+
+    return true
+  }
+}
 
 @main
 struct TravelyApp: App {
-    let persistenceController = PersistenceController.shared
+  // register app delegate for Firebase setup
+  @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
-        }
+  let persistenceController = PersistenceController.shared
+
+  var body: some Scene {
+    WindowGroup {
+      HomeView()
+        .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
+  }
 }

@@ -9,22 +9,52 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
+import LocalAuthentication
 
 struct RootView: View {
     @EnvironmentObject var viewModel: AppViewModel
-
+    
     var body: some View {
         Group {
-            if viewModel.isAuthenticated && (!viewModel.biometricEnabled || viewModel.isBioAuth) {
-                ContentView()
+            if viewModel.isAuthenticated {
+                if viewModel.biometricEnabled && !viewModel.isBioAuth {
+                    // Show login view until Face ID succeeds
+                    LoginView()
+                        .onAppear {
+                            authenticateBiometrics()
+                        }
+                } else {
+                    ContentView()
+                }
             } else {
                 LoginView()
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                viewModel.initializeAuthState()
+            viewModel.initializeAuthState()
+        }
+    }
+    
+    private func authenticateBiometrics() {
+        let context = LAContext()
+        var error: NSError?
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            let reason = "Authenticate to access the app."
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
+                DispatchQueue.main.async {
+                    if success {
+                        print("✅ Face ID authentication successful")
+                        viewModel.isBioAuth = true
+                    } else {
+                        print("❌ Face ID authentication failed")
+                        // Don't sign out, let them try again
+                    }
+                }
             }
+        } else {
+            print("⚠️ Face ID not available")
+            viewModel.biometricEnabled = false
         }
     }
 }
@@ -73,7 +103,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // 🔑  Force options.bundleID to match *this* build's bundle identifier
         options.bundleID = Bundle.main.bundleIdentifier!
 
+        // Configure Firebase
         FirebaseApp.configure(options: options)
+        
+        // Check for existing sign-in
+        if let user = Auth.auth().currentUser {
+            print("✅ Found existing sign-in for user:", user.uid)
+        }
+        
         print("✅ Firebase configured, clientID =", FirebaseApp.app()?.options.clientID ?? "nil")
         return true
     }

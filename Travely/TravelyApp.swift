@@ -16,18 +16,17 @@ struct RootView: View {
     
     var body: some View {
         Group {
-            if viewModel.isAuthenticated {
-                if viewModel.biometricEnabled && !viewModel.isBioAuth {
-                    // Show login view until Face ID succeeds
-                    LoginView()
-                        .onAppear {
-                            authenticateBiometrics()
-                        }
-                } else {
-                    ContentView()
+            if !viewModel.isAuthenticated {
+                // Not signed in - show login
+                LoginView()
+            } else if viewModel.biometricEnabled && !viewModel.isBioAuth {
+                // Signed in but needs Face ID - show Face ID
+                Color.clear.onAppear {
+                    authenticateBiometrics()
                 }
             } else {
-                LoginView()
+                // Signed in and Face ID passed (or not needed) - show main app
+                ContentView()
             }
         }
         .onAppear {
@@ -40,21 +39,24 @@ struct RootView: View {
         var error: NSError?
         
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "Authenticate to access the app."
+            let reason = "Use Face ID to access your account"
             context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
                 DispatchQueue.main.async {
                     if success {
-                        print("✅ Face ID authentication successful")
+                        print("✅ Face ID successful - showing main app")
                         viewModel.isBioAuth = true
-                    } else {
-                        print("❌ Face ID authentication failed")
-                        // Don't sign out, let them try again
+                    } else if let error = error {
+                        print("❌ Face ID failed:", error.localizedDescription)
+                        // On failure, sign out
+                        viewModel.signOut()
                     }
                 }
             }
         } else {
-            print("⚠️ Face ID not available")
+            print("⚠️ Face ID not available:", error?.localizedDescription ?? "Unknown error")
+            // If Face ID isn't available, disable it and continue
             viewModel.biometricEnabled = false
+            viewModel.isBioAuth = true
         }
     }
 }

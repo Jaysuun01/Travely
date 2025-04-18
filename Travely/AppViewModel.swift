@@ -17,8 +17,7 @@ class AppViewModel: ObservableObject {
     private var authStateListener: AuthStateDidChangeListenerHandle?
     
     init() {
-        // Start with biometrics disabled
-        biometricEnabled = true
+        // biometricEnabled is already stored in @AppStorage
         setupAuthStateListener()
     }
     
@@ -47,10 +46,11 @@ class AppViewModel: ObservableObject {
     }
 
     func initializeAuthState() {
-        // This is now just a backup, main state is handled by listener
+        // Check if we have a Firebase user
         if let user = Auth.auth().currentUser {
             self.userName = user.displayName
             self.isAuthenticated = true
+            // isBioAuth will be false by default, requiring Face ID if enabled
         }
     }
 

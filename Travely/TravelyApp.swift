@@ -13,7 +13,7 @@ import LocalAuthentication
 
 struct RootView: View {
     @EnvironmentObject var viewModel: AppViewModel
-    
+
     var body: some View {
         Group {
             if !viewModel.isAuthenticated {
@@ -30,7 +30,9 @@ struct RootView: View {
             }
         }
         .onAppear {
-            viewModel.initializeAuthState()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                viewModel.initializeAuthState()
+            }
         }
     }
     

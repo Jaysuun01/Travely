@@ -1,0 +1,472 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D4B7F4802DA08EBE0061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F47A2DA08EBC0061E9F7 /* Travely.xcdatamodeld */; };
+		D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */; };
+		D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC682DB093F800A3E3BB /* GoogleSignIn */; };
+		D4C3DC6B2DB093F800A3E3BB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC6A2DB093F800A3E3BB /* GoogleSignInSwift */; };
+		D4C3DC6E2DB094FC00A3E3BB /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC6D2DB094FC00A3E3BB /* FirebaseAuth */; };
+		D4C3DC702DB094FC00A3E3BB /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC6F2DB094FC00A3E3BB /* FirebaseAuthCombine-Community */; };
+		D4C3DC722DB094FC00A3E3BB /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC712DB094FC00A3E3BB /* FirebaseCore */; };
+		D4C3DC742DB094FC00A3E3BB /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC732DB094FC00A3E3BB /* FirebaseCrashlytics */; };
+		D4C3DC762DB094FC00A3E3BB /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC752DB094FC00A3E3BB /* FirebaseDatabase */; };
+		D4C3DC782DB094FC00A3E3BB /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC772DB094FC00A3E3BB /* FirebaseMessaging */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D4A4E72E2D94FFCE00882A19 /* Travely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Travely.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4B7F47C2DA08EBE0061E9F7 /* Travely.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Travely.xcdatamodel; sourceTree = "<group>"; };
+		D4B7F48F2DA096120061E9F7 /* Travely.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Travely.xcdatamodel; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D4A3F5B82DA9E1350094B16A /* Exceptions for "Travely" folder in "Travely" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D4A4E72D2D94FFCE00882A19 /* Travely */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D4A4E7302D94FFCE00882A19 /* Travely */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D4A3F5B82DA9E1350094B16A /* Exceptions for "Travely" folder in "Travely" target */,
+			);
+			path = Travely;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D4A4E72B2D94FFCE00882A19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4C3DC782DB094FC00A3E3BB /* FirebaseMessaging in Frameworks */,
+				D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */,
+				D4C3DC722DB094FC00A3E3BB /* FirebaseCore in Frameworks */,
+				D4C3DC6E2DB094FC00A3E3BB /* FirebaseAuth in Frameworks */,
+				D4C3DC742DB094FC00A3E3BB /* FirebaseCrashlytics in Frameworks */,
+				D4C3DC6B2DB093F800A3E3BB /* GoogleSignInSwift in Frameworks */,
+				D4C3DC762DB094FC00A3E3BB /* FirebaseDatabase in Frameworks */,
+				D4C3DC702DB094FC00A3E3BB /* FirebaseAuthCombine-Community in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D4A4E7252D94FFCE00882A19 = {
+			isa = PBXGroup;
+			children = (
+				D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */,
+				D4B7F47A2DA08EBC0061E9F7 /* Travely.xcdatamodeld */,
+				D4A4E7302D94FFCE00882A19 /* Travely */,
+				D4A4E72F2D94FFCE00882A19 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D4A4E72F2D94FFCE00882A19 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D4A4E72E2D94FFCE00882A19 /* Travely.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D4A4E72D2D94FFCE00882A19 /* Travely */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4A4E7412D94FFD200882A19 /* Build configuration list for PBXNativeTarget "Travely" */;
+			buildPhases = (
+				D4A4E72A2D94FFCE00882A19 /* Sources */,
+				D4A4E72B2D94FFCE00882A19 /* Frameworks */,
+				D4A4E72C2D94FFCE00882A19 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D4A4E7302D94FFCE00882A19 /* Travely */,
+			);
+			name = Travely;
+			packageProductDependencies = (
+				D4C3DC682DB093F800A3E3BB /* GoogleSignIn */,
+				D4C3DC6A2DB093F800A3E3BB /* GoogleSignInSwift */,
+				D4C3DC6D2DB094FC00A3E3BB /* FirebaseAuth */,
+				D4C3DC6F2DB094FC00A3E3BB /* FirebaseAuthCombine-Community */,
+				D4C3DC712DB094FC00A3E3BB /* FirebaseCore */,
+				D4C3DC732DB094FC00A3E3BB /* FirebaseCrashlytics */,
+				D4C3DC752DB094FC00A3E3BB /* FirebaseDatabase */,
+				D4C3DC772DB094FC00A3E3BB /* FirebaseMessaging */,
+			);
+			productName = Travely;
+			productReference = D4A4E72E2D94FFCE00882A19 /* Travely.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D4A4E7262D94FFCE00882A19 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					D4A4E72D2D94FFCE00882A19 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+				};
+			};
+			buildConfigurationList = D4A4E7292D94FFCE00882A19 /* Build configuration list for PBXProject "Travely" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D4A4E7252D94FFCE00882A19;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D4C3DC672DB093F800A3E3BB /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D4A4E72F2D94FFCE00882A19 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D4A4E72D2D94FFCE00882A19 /* Travely */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D4A4E72C2D94FFCE00882A19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D4A4E72A2D94FFCE00882A19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */,
+				D4B7F4802DA08EBE0061E9F7 /* Travely.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D4A4E73F2D94FFD200882A19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D4A4E7402D94FFD200882A19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D4A4E7422D94FFD200882A19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Travely/Travely.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
+				DEVELOPMENT_TEAM = BRG6693JF6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Travely/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Sign in quickly and securely with Face ID.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4A4E7432D94FFD200882A19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Travely/Travely.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
+				DEVELOPMENT_TEAM = BRG6693JF6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Travely/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Sign in quickly and securely with Face ID.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D4A4E7292D94FFCE00882A19 /* Build configuration list for PBXProject "Travely" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4A4E73F2D94FFD200882A19 /* Debug */,
+				D4A4E7402D94FFD200882A19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4A4E7412D94FFD200882A19 /* Build configuration list for PBXNativeTarget "Travely" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4A4E7422D94FFD200882A19 /* Debug */,
+				D4A4E7432D94FFD200882A19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D4C3DC672DB093F800A3E3BB /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+		D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D4C3DC682DB093F800A3E3BB /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC672DB093F800A3E3BB /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		D4C3DC6A2DB093F800A3E3BB /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC672DB093F800A3E3BB /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		D4C3DC6D2DB094FC00A3E3BB /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		D4C3DC6F2DB094FC00A3E3BB /* FirebaseAuthCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAuthCombine-Community";
+		};
+		D4C3DC712DB094FC00A3E3BB /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		D4C3DC732DB094FC00A3E3BB /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		D4C3DC752DB094FC00A3E3BB /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		D4C3DC772DB094FC00A3E3BB /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		D4B7F47A2DA08EBC0061E9F7 /* Travely.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D4B7F47C2DA08EBE0061E9F7 /* Travely.xcdatamodel */,
+			);
+			currentVersion = D4B7F47C2DA08EBE0061E9F7 /* Travely.xcdatamodel */;
+			path = Travely.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D4B7F48F2DA096120061E9F7 /* Travely.xcdatamodel */,
+			);
+			currentVersion = D4B7F48F2DA096120061E9F7 /* Travely.xcdatamodel */;
+			path = Travely.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = D4A4E7262D94FFCE00882A19 /* Project object */;
+}

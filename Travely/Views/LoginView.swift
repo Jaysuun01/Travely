@@ -89,10 +89,8 @@ struct LoginView: View {
                 
                 checkBiometricAvailability()
 
-                if viewModel.biometricEnabled && biometricsAvailable && !biometricTriggered {
-                    biometricTriggered = true
-                    authenticateBiometrics()
-                }
+                // Only check biometric availability
+                checkBiometricAvailability()
             }
 
         }
@@ -176,10 +174,7 @@ struct LoginView: View {
                 print("✅ Firebase sign‑in OK for", authResult?.user.uid ?? "")
                 viewModel.signIn(with: authResult?.user.displayName)
                 
-                // If biometrics is enabled, prompt for Face ID
-                if viewModel.biometricEnabled {
-                    authenticateBiometrics()
-                }
+                // Don't prompt for Face ID here - RootView will handle it
             }
         }
     }

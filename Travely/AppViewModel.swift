@@ -18,7 +18,7 @@ class AppViewModel: ObservableObject {
     
     init() {
         // Start with biometrics disabled
-        biometricEnabled = false
+        biometricEnabled = true
         setupAuthStateListener()
     }
     

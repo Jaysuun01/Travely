@@ -1,51 +1,54 @@
 import SwiftUI
 
 struct CustomNavigationBar: View {
-    @State private var selectedTab = 0
+    @Binding var selectedTab: Int
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     var body: some View {
-        HStack {
-            Spacer()
-            NavigationLink(destination: HomeView()) {
-                VStack(spacing: 4) {
-                    Image(systemName: "house.fill")
-                        .font(.system(size: 20))
-                    Text("Home")
-                        .font(.system(size: 10))
-                }
-                .foregroundColor(selectedTab == 0 ? accentColor : .gray)
-            }
-            .simultaneousGesture(TapGesture().onEnded { selectedTab = 0 })
+        ZStack {
+            // Background
+            Color.black.opacity(0.8)
+                .edgesIgnoringSafeArea(.bottom)
             
-            Spacer()
-            NavigationLink(destination: Text("Add Trip")) {
-                VStack(spacing: 4) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 20))
-                    Text("Add")
-                        .font(.system(size: 10))
+            // Tab buttons
+            HStack {
+                Spacer()
+                Button(action: { selectedTab = 0 }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "house.fill")
+                            .font(.system(size: 20))
+                        Text("Home")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(selectedTab == 0 ? accentColor : .gray)
                 }
-                .foregroundColor(selectedTab == 1 ? accentColor : .gray)
-            }
-            .simultaneousGesture(TapGesture().onEnded { selectedTab = 1 })
-            
-            Spacer()
-            NavigationLink(destination: ProfileView()) {
-                VStack(spacing: 4) {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 20))
-                    Text("Profile")
-                        .font(.system(size: 10))
+                
+                Spacer()
+                Button(action: { selectedTab = 1 }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                        Text("Add")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(selectedTab == 1 ? accentColor : .gray)
                 }
-                .foregroundColor(selectedTab == 2 ? accentColor : .gray)
+                
+                Spacer()
+                Button(action: { selectedTab = 2 }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 20))
+                        Text("Profile")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(selectedTab == 2 ? accentColor : .gray)
+                }
+                Spacer()
             }
-            .simultaneousGesture(TapGesture().onEnded { selectedTab = 2 })
-            
-            Spacer()
+            .padding(.vertical, 8)
         }
-        .padding(.vertical, 8)
-        .background(Color.black.opacity(0.8))
+        .frame(height: 49)
         .overlay(
             Rectangle()
                 .fill(accentColor)
@@ -57,6 +60,6 @@ struct CustomNavigationBar: View {
 
 #Preview {
     NavigationStack {
-        CustomNavigationBar()
+        CustomNavigationBar(selectedTab: .constant(0))
     }
 }

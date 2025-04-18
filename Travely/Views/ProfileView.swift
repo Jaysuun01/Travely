@@ -45,8 +45,7 @@ struct ProfileView: View {
                 .padding(.bottom, 100)
             }
         }
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
 }
 

@@ -15,7 +15,7 @@ struct HomeView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
                 
@@ -55,15 +55,14 @@ struct HomeView: View {
                     }
                     
                     Spacer()
-                    
-                    // Custom navigation bar
-                    CustomNavigationBar()
                 }
             }
             .navigationBarHidden(true)
         }
     }
-}
+    }
+
+
 
 struct TripCard: View {
     let trip: Trip

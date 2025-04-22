@@ -83,3 +83,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
       return GIDSignIn.sharedInstance.handle(url)
     }
 }
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder),
+                   to: nil, from: nil, for: nil)
+    }
+}

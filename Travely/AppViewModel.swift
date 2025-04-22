@@ -13,24 +13,59 @@ class AppViewModel: ObservableObject {
     @Published var isBioAuth = false
     @Published var userName: String? = nil
     
-    @AppStorage("biometricEnabled") var biometricEnabled = false
+    @AppStorage("biometricEnabled") var biometricEnabled: Bool = false
+    private var authStateListener: AuthStateDidChangeListenerHandle?
+    
+    init() {
+        // biometricEnabled is already stored in @AppStorage
+        setupAuthStateListener()
+    }
+    
+    deinit {
+        if let listener = authStateListener {
+            Auth.auth().removeStateDidChangeListener(listener)
+        }
+    }
+
+    private func setupAuthStateListener() {
+        authStateListener = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if let user = user {
+                    print("✅ Auth state changed: signed in as", user.uid)
+                    self.userName = user.displayName
+                    self.isAuthenticated = true
+                } else {
+                    print("ℹ️ Auth state changed: signed out")
+                    self.isAuthenticated = false
+                    self.isBioAuth = false
+                    self.userName = nil
+                }
+            }
+        }
+    }
 
     func initializeAuthState() {
-        self.isAuthenticated = Auth.auth().currentUser != nil
+        // Check if we have a Firebase user
+        if let user = Auth.auth().currentUser {
+            self.userName = user.displayName
+            self.isAuthenticated = true
+            // isBioAuth will be false by default, requiring Face ID if enabled
+        }
     }
 
     func signIn(with displayName: String?) {
         self.userName = displayName
-        self.isAuthenticated = true
+        // isAuthenticated will be set by auth state listener
     }
 
     func signOut() {
         do {
-            try? Auth.auth().signOut()
+            try Auth.auth().signOut()
+            // State reset will be handled by auth state listener
             biometricEnabled = false
-            isAuthenticated = false
-            isBioAuth = false
-            userName = nil
+        } catch {
+            print("❌ Error signing out:", error)
         }
     }
 }

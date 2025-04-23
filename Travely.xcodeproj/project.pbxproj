@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		022909C02DB8BC58001C7DD9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 022909BF2DB8BC58001C7DD9 /* FirebaseStorage */; };
 		D4062BAC2DB8A1C900474CC4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */; };
 		D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */; };
 		D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC682DB093F800A3E3BB /* GoogleSignIn */; };
@@ -54,6 +55,7 @@
 				D4C3DC782DB094FC00A3E3BB /* FirebaseMessaging in Frameworks */,
 				D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */,
 				D4C3DC722DB094FC00A3E3BB /* FirebaseCore in Frameworks */,
+				022909C02DB8BC58001C7DD9 /* FirebaseStorage in Frameworks */,
 				D4C3DC6E2DB094FC00A3E3BB /* FirebaseAuth in Frameworks */,
 				D4C3DC742DB094FC00A3E3BB /* FirebaseCrashlytics in Frameworks */,
 				D4062BAC2DB8A1C900474CC4 /* FirebaseFirestore in Frameworks */,
@@ -113,6 +115,7 @@
 				D4C3DC752DB094FC00A3E3BB /* FirebaseDatabase */,
 				D4C3DC772DB094FC00A3E3BB /* FirebaseMessaging */,
 				D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */,
+				022909BF2DB8BC58001C7DD9 /* FirebaseStorage */,
 			);
 			productName = Travely;
 			productReference = D4A4E72E2D94FFCE00882A19 /* Travely.app */;
@@ -306,7 +309,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = BRG6693JF6;
+				DEVELOPMENT_TEAM = 3449PUSCGX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -321,7 +324,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -338,7 +341,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = BRG6693JF6;
+				DEVELOPMENT_TEAM = 3449PUSCGX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -353,7 +356,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -404,6 +407,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		022909BF2DB8BC58001C7DD9 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

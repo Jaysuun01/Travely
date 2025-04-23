@@ -12,6 +12,7 @@ struct Trip: Identifiable, Codable {
     var ownerId: String
     var collaborators: [String]
     var tripId: String
+    var locations: [Location] = []
     var createdAt: Date?
 
     // Computed property for display
@@ -21,8 +22,7 @@ struct Trip: Identifiable, Codable {
         return formatter.string(from: startDate)
     }
 
-    var imageName: String {
-        // Fallback or dynamic logic
-        return destination.lowercased().contains("france") ? "france" : "la"
+    var systemImageName: String {
+        return "airplane.circle.fill"
     }
 }

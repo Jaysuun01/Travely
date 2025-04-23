@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4062BAC2DB8A1C900474CC4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */; };
 		D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */; };
 		D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC682DB093F800A3E3BB /* GoogleSignIn */; };
 		D4C3DC6B2DB093F800A3E3BB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC6A2DB093F800A3E3BB /* GoogleSignInSwift */; };
@@ -55,6 +56,7 @@
 				D4C3DC722DB094FC00A3E3BB /* FirebaseCore in Frameworks */,
 				D4C3DC6E2DB094FC00A3E3BB /* FirebaseAuth in Frameworks */,
 				D4C3DC742DB094FC00A3E3BB /* FirebaseCrashlytics in Frameworks */,
+				D4062BAC2DB8A1C900474CC4 /* FirebaseFirestore in Frameworks */,
 				D4C3DC6B2DB093F800A3E3BB /* GoogleSignInSwift in Frameworks */,
 				D4C3DC762DB094FC00A3E3BB /* FirebaseDatabase in Frameworks */,
 				D4C3DC702DB094FC00A3E3BB /* FirebaseAuthCombine-Community in Frameworks */,
@@ -110,6 +112,7 @@
 				D4C3DC732DB094FC00A3E3BB /* FirebaseCrashlytics */,
 				D4C3DC752DB094FC00A3E3BB /* FirebaseDatabase */,
 				D4C3DC772DB094FC00A3E3BB /* FirebaseMessaging */,
+				D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */,
 			);
 			productName = Travely;
 			productReference = D4A4E72E2D94FFCE00882A19 /* Travely.app */;
@@ -303,7 +306,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = 72P8HX4Q5J;
+				DEVELOPMENT_TEAM = BRG6693JF6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -318,7 +321,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.jason;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -335,7 +338,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = 72P8HX4Q5J;
+				DEVELOPMENT_TEAM = BRG6693JF6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -350,7 +353,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.jason;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -401,6 +404,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D4062BAB2DB8A1C900474CC4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D4C3DC6C2DB094FC00A3E3BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
 		D4C3DC682DB093F800A3E3BB /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D4C3DC672DB093F800A3E3BB /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

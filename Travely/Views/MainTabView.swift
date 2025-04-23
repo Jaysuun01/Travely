@@ -10,7 +10,7 @@ struct MainTabView: View {
                 HomeView()
                     .tag(0)
                 
-                AddTripView()
+                AddTripView(selectedTab: $selectedTab)
                     .tag(1)
                 
                 ProfileView()

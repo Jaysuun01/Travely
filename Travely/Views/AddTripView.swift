@@ -94,6 +94,7 @@ struct AddTripView: View {
             "notes": notes,
             "startDate": Timestamp(date: startDate),
             "endDate": Timestamp(date: endDate),
+            "locations": [],
             "createdAt": FieldValue.serverTimestamp()
         ]
         

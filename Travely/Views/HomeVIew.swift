@@ -184,81 +184,155 @@ struct TripCard: View {
 struct TripDetailView: View {
     let trip: Trip
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
-    
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Hero Image Section
-                Image(systemName: trip.systemImageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 200)
-                    .foregroundColor(.orange)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.white.opacity(0.1))
-                
-                // Trip Info Section
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(trip.tripName)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Start")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Text(trip.startDate, style: .date)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing) {
-                            Text("End")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Text(trip.endDate, style: .date)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
-                .padding()
-                
-                // Orange divider
-                Rectangle()
-                    .fill(accentColor)
-                    .frame(height: 1)
-                    .padding(.horizontal)
-                
-                // Locations Section
-                VStack(alignment: .leading, spacing: 16) {
-                    
-                    if trip.locations.isEmpty {
-                        VStack(spacing: 12) {
-                            Text("No places added yet")
-                                .foregroundColor(.gray)
-                            Text("Click on the \"+\" icon at the bottom right to add locations")
-                                .foregroundColor(.gray)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 32)
-                    } else {
-                        ForEach(trip.locations) { location in
-                            LocationRow(location: location)
-                        }
-                    }
+    @State private var showPlacePicker = false
+    @State private var addedLocations: [Location] = []
+    private let db = Firestore.firestore()
+
+    func addLocationToTrip(_ location: Location) {
+        guard !trip.tripId.isEmpty else { return }
+        let tripRef = db.collection("trips").document(trip.tripId)
+        do {
+            let locationWithId = Location(
+                id: UUID().uuidString,
+                name: location.name,
+                startDate: location.startDate,
+                endDate: location.endDate,
+                transportation: location.transportation,
+                coordinates: location.coordinates,
+                notes: location.notes,
+                createdAt: location.createdAt,
+                tripId: trip.tripId
+            )
+            let locationData = try Firestore.Encoder().encode(locationWithId)
+            tripRef.updateData([
+                "locations": FieldValue.arrayUnion([locationData])
+            ]) { error in
+                if let error = error {
+                    print("Error updating locations: \(error.localizedDescription)")
                 }
             }
+        } catch {
+            print("Encoding error: \(error)")
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Hero Image Section
+                    Image(systemName: trip.systemImageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 200)
+                        .foregroundColor(.orange)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.1))
+                    
+                    // Trip Info Section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(trip.tripName)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Start")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                Text(trip.startDate, style: .date)
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing) {
+                                Text("End")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                Text(trip.endDate, style: .date)
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                    .padding()
+                    
+                    // Orange divider
+                    Rectangle()
+                        .fill(accentColor)
+                        .frame(height: 1)
+                        .padding(.horizontal)
+                    
+                    // Locations Section
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(alignment: .center, spacing: 0) {
+                            Text("Places to Visit")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 8)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 0)
+                        .padding(.bottom, 16)
+
+                        if (trip.locations + addedLocations).isEmpty {
+                            VStack {
+                                Text("No places added yet.")
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 32)
+                        } else {
+                            ForEach((trip.locations + addedLocations)) { location in
+                                LocationRow(location: location)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 60)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.clear)
+
+                }
+            }
+            // Floating Add Button always overlays bottom right, above nav bar
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: { showPlacePicker = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 48))
+                            .foregroundColor(accentColor)
+                            .shadow(radius: 6)
+                    }
+                    .accessibilityLabel("Add Place")
+                    .padding(.trailing, 18)
+                    .padding(.bottom, 100)
+                }
+            }
+            .ignoresSafeArea(edges: .bottom)
         }
         .background(Color.black.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showPlacePicker) {
+            MapPlacePickerView(selectedLocations: Binding(
+                get: { addedLocations },
+                set: { newLocations in
+                    // Find the newly added location
+                    if let newLocation = newLocations.last, !addedLocations.contains(where: { $0.id == newLocation.id }) {
+                        addedLocations.append(newLocation)
+                        addLocationToTrip(newLocation)
+                    }
+                }
+            ), defaultLocationName: trip.destination)
+        }
     }
 }
 

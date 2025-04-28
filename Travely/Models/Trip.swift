@@ -14,6 +14,7 @@ struct Trip: Identifiable, Codable {
     var tripId: String
     var locations: [Location] = []
     var createdAt: Date?
+    var hasPendingWrites: Bool = false
 
     // Computed property for display
     var displayDate: String {
@@ -24,5 +25,9 @@ struct Trip: Identifiable, Codable {
 
     var systemImageName: String {
         return "airplane.circle.fill"
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case tripId, tripName, destination, notes, startDate, endDate, ownerId, collaborators, locations, createdAt
     }
 }

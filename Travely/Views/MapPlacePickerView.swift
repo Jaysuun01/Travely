@@ -24,6 +24,8 @@ struct MapPlacePickerView: View {
     @State private var isSearching = false
     @State private var countryCode: String? = nil
     @State private var arrowBounce = false
+    @State private var selectedMapItem: MKMapItem?
+    @State private var showLocationDetails = false
     
     var body: some View {
         VStack {
@@ -80,15 +82,8 @@ struct MapPlacePickerView: View {
 
             List(mapItems, id: \.self) { item in
                 Button(action: {
-                    var newLocation = Location(mapItem: item)
-                    // Set tripId to match the parent trip if available
-                    if let tripId = selectedLocations.first?.tripId, !tripId.isEmpty {
-                        newLocation.tripId = tripId
-                    }
-                    selectedLocations.append(newLocation)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                        presentationMode.wrappedValue.dismiss()
-                    }
+                    selectedMapItem = item
+                    showLocationDetails = true
                 }) {
                     VStack(alignment: .leading) {
                         Text(item.name ?? "Unknown")
@@ -106,6 +101,20 @@ struct MapPlacePickerView: View {
         .onAppear {
             setRegionToDestination()
             arrowBounce = true
+        }
+        .sheet(isPresented: $showLocationDetails) {
+            if let item = selectedMapItem {
+                LocationDetailsView(
+                    mapItem: item,
+                    tripId: selectedLocations.first?.tripId ?? "",
+                    onSave: { location in
+                        selectedLocations.append(location)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                )
+            }
         }
     }
 

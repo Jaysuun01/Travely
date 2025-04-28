@@ -182,10 +182,12 @@ struct TripCard: View {
 }
 
 struct TripDetailView: View {
-    let trip: Trip
+    @Environment(\.presentationMode) var presentationMode
+    @State var trip: Trip
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     @State private var showPlacePicker = false
     @State private var addedLocations: [Location] = []
+    @State private var showEdit = false
     private let db = Firestore.firestore()
 
     func addLocationToTrip(_ location: Location) {
@@ -216,69 +218,150 @@ struct TripDetailView: View {
         }
     }
     
+    func updateLocation(_ updatedLocation: Location) {
+        guard !trip.tripId.isEmpty else { return }
+        let tripRef = db.collection("trips").document(trip.tripId)
+        
+        // Remove old location and add updated one
+        if let index = trip.locations.firstIndex(where: { $0.id == updatedLocation.id }) {
+            var updatedLocations = trip.locations
+            updatedLocations[index] = updatedLocation
+            
+            do {
+                let locationsData = try updatedLocations.map { try Firestore.Encoder().encode($0) }
+                tripRef.updateData(["locations": locationsData]) { error in
+                    if let error = error {
+                        print("Error updating location: \(error.localizedDescription)")
+                    } else {
+                        // Update local state
+                        trip.locations = updatedLocations
+                    }
+                }
+            } catch {
+                print("Encoding error: \(error)")
+            }
+        }
+    }
+    
+    func deleteLocation(_ location: Location) {
+        guard !trip.tripId.isEmpty else { return }
+        let tripRef = db.collection("trips").document(trip.tripId)
+        
+        // Remove location from the array
+        var updatedLocations = trip.locations
+        updatedLocations.removeAll { $0.id == location.id }
+        
+        do {
+            let locationsData = try updatedLocations.map { try Firestore.Encoder().encode($0) }
+            tripRef.updateData(["locations": locationsData]) { error in
+                if let error = error {
+                    print("Error deleting location: \(error.localizedDescription)")
+                } else {
+                    // Update local state
+                    trip.locations = updatedLocations
+                }
+            }
+        } catch {
+            print("Encoding error: \(error)")
+        }
+    }
+
     var body: some View {
         ZStack {
             ScrollView {
                 VStack(spacing: 0) {
-                    // Hero Image Section
-                    Image(systemName: trip.systemImageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 200)
-                        .foregroundColor(.orange)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white.opacity(0.1))
-                    
-                    // Trip Info Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(trip.tripName)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                        
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text("Start")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                Text(trip.startDate, style: .date)
-                                    .font(.headline)
-                                    .foregroundColor(.white)
+                    // Hero section with image as background, card fully in front
+                    ZStack(alignment: .top) {
+                        // Banner image as background
+                        Image(systemName: trip.systemImageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 180)
+                            .foregroundColor(.orange)
+                            .opacity(0.5)
+                            .background(Color.clear)
+                        // Card sits fully in front of the image
+                        VStack(alignment: .leading, spacing: 18) {
+                            HStack(alignment: .center) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(trip.tripName)
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Text(trip.destination)
+                                        .font(.title3)
+                                        .foregroundColor(accentColor)
+                                }
+                                Spacer()
                             }
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing) {
-                                Text("End")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                Text(trip.endDate, style: .date)
-                                    .font(.headline)
-                                    .foregroundColor(.white)
+                            .padding(.bottom, 6)
+                            HStack(spacing: 24) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "calendar")
+                                        .foregroundColor(.blue)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Start")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                        Text(trip.startDate, style: .date)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                HStack(spacing: 8) {
+                                    Image(systemName: "calendar")
+                                        .foregroundColor(.blue)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("End")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                        Text(trip.endDate, style: .date)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                            }
+                            if !trip.notes.isEmpty {
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "note.text")
+                                        .foregroundColor(.yellow)
+                                    Text(trip.notes)
+                                        .font(.body)
+                                        .foregroundColor(.white)
+                                        .padding(.top, 2)
+                                }
+                                .padding(.top, 4)
                             }
                         }
+                        .padding(20)
+                        .background(Color.white.opacity(0.12))
+                        .cornerRadius(18)
+                        .shadow(color: Color.black.opacity(0.18), radius: 10, x: 0, y: 8)
+                        .padding(.horizontal, 18)
+                        .padding(.top, 120)
                     }
-                    .padding()
-                    
+                    .frame(height: 280)
                     // Orange divider
                     Rectangle()
                         .fill(accentColor)
                         .frame(height: 1)
                         .padding(.horizontal)
-                    
+                        .padding(.top, 40) // Increased gap above divider
                     // Locations Section
                     VStack(alignment: .leading, spacing: 0) {
-                        HStack(alignment: .center, spacing: 0) {
+                        HStack(alignment: .center, spacing: 8) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .foregroundColor(accentColor)
+                                .font(.system(size: 24, weight: .bold))
                             Text("Places to Visit")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.vertical, 8)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(accentColor)
+                                .shadow(color: Color.black.opacity(0.18), radius: 2, x: 0, y: 2)
+                                .padding(.vertical, 10)
                             Spacer()
                         }
                         .padding(.horizontal, 0)
                         .padding(.bottom, 16)
-
                         if (trip.locations + addedLocations).isEmpty {
                             VStack {
                                 Text("No places added yet.")
@@ -290,7 +373,11 @@ struct TripDetailView: View {
                             .padding(.vertical, 32)
                         } else {
                             ForEach((trip.locations + addedLocations)) { location in
-                                LocationRow(location: location)
+                                LocationRow(
+                                    location: location,
+                                    onEdit: updateLocation,
+                                    onDelete: deleteLocation
+                                )
                             }
                         }
                     }
@@ -298,8 +385,22 @@ struct TripDetailView: View {
                     .padding(.bottom, 60)
                     .frame(maxWidth: .infinity)
                     .background(Color.clear)
-
                 }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showEdit = true }) {
+                        Image(systemName: "pencil")
+                    }
+                }
+            }
+            .sheet(isPresented: $showEdit) {
+                EditTripView(trip: trip, onSave: { updatedTrip in
+                    self.trip = updatedTrip
+                }, onDelete: { _ in
+                    presentationMode.wrappedValue.dismiss()
+                })
             }
             // Floating Add Button always overlays bottom right, above nav bar
             VStack {
@@ -320,7 +421,6 @@ struct TripDetailView: View {
             .ignoresSafeArea(edges: .bottom)
         }
         .background(Color.black.ignoresSafeArea())
-        .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showPlacePicker) {
             MapPlacePickerView(selectedLocations: Binding(
                 get: { addedLocations },
@@ -338,30 +438,99 @@ struct TripDetailView: View {
 
 struct LocationRow: View {
     let location: Location
+    @State private var showEditSheet = false
+    var onEdit: (Location) -> Void
+    var onDelete: (Location) -> Void
+    private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+    
+    private let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }()
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(location.name)
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Text(location.displayDateRange)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            // Location name and icon
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: "mappin.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(accentColor)
+                
+                Text(location.name)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.gray)
-                    .font(.system(size: 14))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            
+            // Details section
+            VStack(spacing: 8) {
+                // Date and Time
+                HStack(spacing: 16) {
+                    // Date
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 14))
+                            .foregroundColor(.blue)
+                        Text(dateFormatter.string(from: location.startDate))
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                    }
+                    
+                    // Time
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 14))
+                            .foregroundColor(.blue)
+                        Text("\(timeFormatter.string(from: location.startDate)) - \(timeFormatter.string(from: location.endDate))")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                // Transportation if available
+                if !location.transportation.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: "car.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.green)
+                        Text(location.transportation)
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            .padding(.leading, 36) // Align with the text above
         }
-        .background(Color(UIColor.systemBackground))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.white.opacity(0.05))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
+        .padding(.vertical, 4)
+        .onTapGesture {
+            showEditSheet = true
+        }
+        .sheet(isPresented: $showEditSheet) {
+            EditLocationView(
+                location: location,
+                tripId: location.tripId,
+                onSave: onEdit,
+                onDelete: onDelete
+            )
+        }
     }
 }
 

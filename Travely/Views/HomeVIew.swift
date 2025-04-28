@@ -76,7 +76,7 @@ struct HomeView: View {
                     // Trip list
                     ScrollView {
                         LazyVStack(spacing: 16) {
-                            ForEach(filteredTrips) { trip in
+                            ForEach(filteredTrips, id: \.tripId) { trip in
                                 NavigationLink(destination: TripDetailView(trip: trip)) {
                                     TripCard(trip: trip, onDelete: { deleteTrip(trip) })
                                 }

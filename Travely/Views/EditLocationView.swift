@@ -12,7 +12,7 @@ struct EditLocationView: View {
     @State private var selectedDate: Date
     @State private var startTime: Date
     @State private var endTime: Date
-    @State private var transportation: String
+    @State private var transportation: TransportationType
     @State private var notes: String
     @State private var showDeleteConfirmation = false
     
@@ -108,16 +108,21 @@ struct EditLocationView: View {
                             .padding(.vertical, 4)
                             
                             HStack(spacing: 12) {
-                                Image(systemName: "car.fill")
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-                                    .foregroundColor(.green)
-                                TextField("Transportation", text: $transportation)
-                                    .font(.headline)
-                                    .padding(12)
-                                    .background(Color.white.opacity(0.08))
-                                    .cornerRadius(10)
-                                    .foregroundColor(.white)
+                                Picker("Transportation", selection: $transportation) {
+                                    ForEach(TransportationType.allCases) { type in
+                                        HStack {
+                                            Image(systemName: type.iconName)
+                                                .foregroundColor(type.iconColor)
+                                            Text(type.displayName)
+                                        }
+                                        .tag(type)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .padding(12)
+                                .background(Color.white.opacity(0.08))
+                                .cornerRadius(10)
+                                .foregroundColor(.white)
                             }
                             
                             HStack(alignment: .top, spacing: 12) {

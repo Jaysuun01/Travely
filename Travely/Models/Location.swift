@@ -8,7 +8,7 @@ struct Location: Identifiable, Codable, Equatable {
     var name: String
     var startDate: Date
     var endDate: Date
-    var transportation: String
+    var transportation: TransportationType
     var coordinates: GeoPoint
     var notes: String?
     var createdAt: Date?
@@ -20,6 +20,18 @@ struct Location: Identifiable, Codable, Equatable {
         formatter.dateStyle = .medium
         return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case startDate
+        case endDate
+        case transportation
+        case coordinates
+        case notes
+        case createdAt
+        case tripId
+    }
 }
 
 // Add initializer for MKMapItem
@@ -29,7 +41,7 @@ extension Location {
         self.name = mapItem.name ?? "Unknown"
         self.startDate = Date() // Default to now, or customize as needed
         self.endDate = Date()   // Default to now, or customize as needed
-        self.transportation = ""
+        self.transportation = .car // Default to car
         self.coordinates = GeoPoint(latitude: mapItem.placemark.coordinate.latitude, longitude: mapItem.placemark.coordinate.longitude)
         self.notes = nil
         self.createdAt = Date()

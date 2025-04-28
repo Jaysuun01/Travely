@@ -146,7 +146,7 @@ struct EditTripView: View {
                                         .fontWeight(.semibold)
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity)
+                                .frame(width: 200)
                                 .background(accentColor)
                                 .cornerRadius(12)
                                 .foregroundColor(.white)
@@ -154,6 +154,7 @@ struct EditTripView: View {
                             }
                         }
                         .padding(.top, 12)
+                        .frame(maxWidth: .infinity, alignment: .center)
                         
                         Button(role: .destructive, action: deleteTrip) {
                             HStack {
@@ -162,12 +163,13 @@ struct EditTripView: View {
                                     .fontWeight(.semibold)
                             }
                             .padding()
-                            .frame(maxWidth: .infinity)
+                            .frame(width: 200)
                             .background(Color.red.opacity(0.9))
                             .cornerRadius(12)
                             .foregroundColor(.white)
                         }
                         .padding(.top, 8)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.bottom, 30)
                 }

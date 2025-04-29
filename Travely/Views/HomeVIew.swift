@@ -113,71 +113,102 @@ struct HomeView: View {
     func fetchUserTrips() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        db.collection("trips")
-        .whereField("ownerId", isEqualTo: uid)
-        .getDocuments { snapshot, error in
-            if let docs = snapshot?.documents {
-                let _ = docs.map { $0.data() } // Forces caching of the doc
+        // Use a single listener for both owned and collaborative trips
+        let query = db.collection("trips")
+            .whereFilter(Filter.orFilter([
+                Filter.whereField("ownerId", isEqualTo: uid),
+                Filter.whereField("collaborators", arrayContains: uid)
+            ]))
+        
+        query.addSnapshotListener { snapshot, error in
+            if let error = error {
+                print("Error fetching trips: \(error.localizedDescription)")
+                return
             }
-        }
-
-        // Listen for trips the user owns
-        db.collection("trips")
-        .whereField("ownerId", isEqualTo: uid)
-        .addSnapshotListener { snapshot1, error in
-            var ownedTrips: [Trip] = []
-            if let docs = snapshot1?.documents {
-                print("📨 Received \(docs.count) owned trip docs")
-                ownedTrips = docs.compactMap {
-                    do {
-                        var trip = try $0.data(as: Trip.self)
-                        trip.hasPendingWrites = $0.metadata.hasPendingWrites
-                        print("📦 Trip loaded:", trip.tripName, "| tripId:", trip.tripId)
-                        return trip
-                    } catch {
-                        print("❌ Trip decode failed for \( $0.documentID ): \(error)")
-                        return nil
-                    }
-                }
+            
+            guard let documents = snapshot?.documents else {
+                print("No documents found")
+                return
             }
-
-            // Listen for trips where user is a collaborator
-            db.collection("trips")
-            .whereField("collaborators", arrayContains: uid)
-            .addSnapshotListener { snapshot2, error in
-                var collabTrips: [Trip] = []
-                if let docs = snapshot2?.documents {
-                    print("📨 Received \(docs.count) collab trip docs")
-                    collabTrips = docs.compactMap {
-                        do {
-                            var trip = try $0.data(as: Trip.self)
-                            trip.hasPendingWrites = $0.metadata.hasPendingWrites
-                            print("📦 Trip loaded:", trip.tripName, "| tripId:", trip.tripId)
-                            return trip
-                        } catch {
-                            print("❌ Trip decode failed for \( $0.documentID ): \(error)")
-                            return nil
+            
+            print("📨 Received \(documents.count) trip docs")
+            
+            let fetchedTrips = documents.compactMap { document -> Trip? in
+                do {
+                    var trip = try document.data(as: Trip.self)
+                    trip.hasPendingWrites = document.metadata.hasPendingWrites
+                    
+                    // Validate and fix transportation values
+                    trip.locations = trip.locations.map { location in
+                        var fixedLocation = location
+                        if fixedLocation.transportation.rawValue.isEmpty {
+                            fixedLocation.transportation = .walking // Default to walking if empty
                         }
+                        return fixedLocation
                     }
-                }
-
-                // Merge owned + collab trips, removing duplicates
-                let combined = Dictionary(grouping: ownedTrips + collabTrips, by: \.tripId)
-                    .compactMap { $0.value.first }
-
-                DispatchQueue.main.async {
-                    self.trips = combined.sorted(by: { $0.startDate < $1.startDate })
-
-                    // ✅ This safely disables loading once any data arrives
-                    let fromCache1 = snapshot1?.metadata.isFromCache ?? false
-                    let fromCache2 = snapshot2?.metadata.isFromCache ?? false
-                    let hadData = !ownedTrips.isEmpty || !collabTrips.isEmpty
-
-                    self.isRefreshing = fromCache1 || fromCache2
-                    if hadData || (!fromCache1 && !fromCache2) {
-                        self.isRefreshing = false
+                    
+                    print("📦 Trip loaded:", trip.tripName, "| tripId:", trip.tripId)
+                    return trip
+                } catch {
+                    print("❌ Trip decode failed for \(document.documentID): \(error)")
+                    // Try to recover the trip with default values
+                    if let data = try? document.data() {
+                        let tripId = document.documentID
+                        let tripName = data["tripName"] as? String ?? "Untitled Trip"
+                        let destination = data["destination"] as? String ?? ""
+                        let notes = data["notes"] as? String ?? ""
+                        let startDate = (data["startDate"] as? Timestamp)?.dateValue() ?? Date()
+                        let endDate = (data["endDate"] as? Timestamp)?.dateValue() ?? Date()
+                        let ownerId = data["ownerId"] as? String ?? ""
+                        let collaborators = data["collaborators"] as? [String] ?? []
+                        let locations = (data["locations"] as? [[String: Any]])?.compactMap { locationData -> Location? in
+                            guard let locationId = locationData["id"] as? String,
+                                  let name = locationData["name"] as? String,
+                                  let startDate = (locationData["startDate"] as? Timestamp)?.dateValue(),
+                                  let endDate = (locationData["endDate"] as? Timestamp)?.dateValue(),
+                                  let transportationRaw = locationData["transportation"] as? String,
+                                  let transportation = TransportationType(rawValue: transportationRaw),
+                                  let coordinates = locationData["coordinates"] as? GeoPoint
+                            else { return nil }
+                            
+                            return Location(
+                                id: locationId,
+                                name: name,
+                                startDate: startDate,
+                                endDate: endDate,
+                                transportation: transportation,
+                                coordinates: coordinates,
+                                notes: locationData["notes"] as? String,
+                                createdAt: (locationData["createdAt"] as? Timestamp)?.dateValue(),
+                                tripId: tripId
+                            )
+                        } ?? []
+                        
+                        var trip = Trip(
+                            id: tripId,
+                            tripName: tripName,
+                            destination: destination,
+                            notes: notes,
+                            startDate: startDate,
+                            endDate: endDate,
+                            ownerId: ownerId,
+                            collaborators: collaborators,
+                            tripId: tripId,
+                            locations: locations,
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue(),
+                            hasPendingWrites: false
+                        )
+                        trip.hasPendingWrites = document.metadata.hasPendingWrites
+                        print("📦 Recovered trip:", trip.tripName, "| tripId:", trip.tripId)
+                        return trip
                     }
+                    return nil
                 }
+            }
+            
+            DispatchQueue.main.async {
+                self.trips = fetchedTrips.sorted(by: { $0.startDate < $1.startDate })
+                self.isRefreshing = snapshot?.metadata.isFromCache ?? false
             }
         }
     }
@@ -222,7 +253,7 @@ struct TripCard: View {
             // Top section with icon and dates
             HStack(alignment: .top, spacing: 16) {
                 // Trip icon with gradient background
-                Image(systemName: trip.systemImageName)
+                Image(systemName: "airplane")  // Default to airplane icon
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32, height: 32)
@@ -395,7 +426,7 @@ struct TripDetailView: View {
                     // Hero section with image as background, card fully in front
                     ZStack(alignment: .top) {
                         // Banner image as background
-                        Image(systemName: trip.systemImageName)
+                        Image(systemName: "airplane")  // Default to airplane icon
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)

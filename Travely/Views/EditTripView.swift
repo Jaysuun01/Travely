@@ -1,22 +1,35 @@
 import SwiftUI
-import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 
-struct AddTripView: View {
-    @Binding var selectedTab: Int
-    @State private var tripName = ""
-    @State private var destination = ""
-    @State private var startDate = Date()
-    @State private var endDate = Date()
-    @State private var notes = ""
+struct EditTripView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @State var trip: Trip
+    var onSave: ((Trip) -> Void)?
+    var onDelete: ((Trip) -> Void)?
     
+    @State private var tripName: String
+    @State private var destination: String
+    @State private var startDate: Date
+    @State private var endDate: Date
+    @State private var notes: String
     @State private var isSaving = false
     @State private var errorMessage = ""
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     private let db = Firestore.firestore()
-
+    
+    init(trip: Trip, onSave: ((Trip) -> Void)? = nil, onDelete: ((Trip) -> Void)? = nil) {
+        self._trip = State(initialValue: trip)
+        self.onSave = onSave
+        self.onDelete = onDelete
+        self._tripName = State(initialValue: trip.tripName)
+        self._destination = State(initialValue: trip.destination)
+        self._startDate = State(initialValue: trip.startDate)
+        self._endDate = State(initialValue: trip.endDate)
+        self._notes = State(initialValue: trip.notes)
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -25,11 +38,11 @@ struct AddTripView: View {
                     // Header
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("New Trip")
+                            Text("Edit Trip")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .foregroundColor(accentColor)
-                            Text("Plan your next adventure.")
+                            Text("Update your trip details below.")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -127,9 +140,9 @@ struct AddTripView: View {
                                 ProgressView()
                             } else {
                                 HStack {
-                                    Image(systemName: "plus.circle.fill")
+                                    Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.white)
-                                    Text("Save Trip")
+                                    Text("Save Changes")
                                         .fontWeight(.semibold)
                                 }
                                 .padding()
@@ -142,72 +155,82 @@ struct AddTripView: View {
                         }
                         .padding(.top, 12)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        Button(role: .destructive, action: deleteTrip) {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete Trip")
+                                    .fontWeight(.semibold)
+                            }
+                            .padding()
+                            .frame(width: 200)
+                            .background(Color.red.opacity(0.9))
+                            .cornerRadius(12)
+                            .foregroundColor(.white)
+                        }
+                        .padding(.top, 8)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.bottom, 30)
                 }
             }
-            .onAppear {
-                resetFields()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
             }
-            .onTapGesture {
-                UIApplication.shared.endEditing()
-            }
-            .navigationBarHidden(true)
         }
     }
     
-    private func resetFields() {
-        tripName = ""
-        destination = ""
-        startDate = Date()
-        endDate = Date()
-        notes = ""
-        errorMessage = ""
-        isSaving = false
-    }
-    
-    func saveTrip() {
+    private func saveTrip() {
         guard let userId = Auth.auth().currentUser?.uid else {
             errorMessage = "Not signed in."
             return
         }
-
         isSaving = true
         errorMessage = ""
-
-<<<<<<< HEAD
-#Preview {
-    AddTripView()
-        .environmentObject(AppViewModel())
-
-=======
-        let tripRef = db.collection("trips").document()
-        let tripId = tripRef.documentID
-
+        let tripRef = db.collection("trips").document(trip.tripId)
         let data: [String: Any] = [
-            "tripId": tripId,
+            "tripId": trip.tripId,
             "tripName": tripName,
             "destination": destination,
-            "ownerId": userId,
-            "collaborators": [],
+            "ownerId": trip.ownerId,
+            "collaborators": trip.collaborators,
             "notes": notes,
             "startDate": Timestamp(date: startDate),
             "endDate": Timestamp(date: endDate),
-            "locations": [],
-            "createdAt": FieldValue.serverTimestamp()
+            "locations": trip.locations.map { try? Firestore.Encoder().encode($0) },
+            "createdAt": trip.createdAt ?? FieldValue.serverTimestamp()
         ]
-        
         tripRef.setData(data) { error in
             isSaving = false
             if let error = error {
-                errorMessage = "Failed to save trip: \(error.localizedDescription)"
-                print("Firestore error: \(error)")
+                errorMessage = "Failed to update trip: \(error.localizedDescription)"
             } else {
-                print("Trip saved successfully with ID: \(tripId)")
-                selectedTab = 0 // Switch to Home tab
-                // Optionally navigate back or reset fields
+                // Update local trip state
+                trip.tripName = tripName
+                trip.destination = destination
+                trip.startDate = startDate
+                trip.endDate = endDate
+                trip.notes = notes
+                onSave?(trip)
+                presentationMode.wrappedValue.dismiss()
             }
         }
     }
->>>>>>> main
+    
+    private func deleteTrip() {
+        let tripRef = db.collection("trips").document(trip.tripId)
+        tripRef.delete { error in
+            if let error = error {
+                errorMessage = "Failed to delete trip: \(error.localizedDescription)"
+            } else {
+                onDelete?(trip)
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
+    }
 }

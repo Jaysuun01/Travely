@@ -14,9 +14,9 @@ struct CustomNavigationBar: View {
             HStack {
                 Spacer()
                 Button(action: { selectedTab = 0 }) {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 6) {
                         Image(systemName: "house.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 24))
                         Text("Home")
                             .font(.system(size: 10))
                     }
@@ -27,7 +27,7 @@ struct CustomNavigationBar: View {
                 Button(action: { selectedTab = 1 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 24))
                         Text("Add")
                             .font(.system(size: 10))
                     }
@@ -38,7 +38,7 @@ struct CustomNavigationBar: View {
                 Button(action: { selectedTab = 2 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "person.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 24))
                         Text("Profile")
                             .font(.system(size: 10))
                     }

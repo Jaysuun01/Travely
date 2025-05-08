@@ -28,4 +28,6 @@ struct MainTabView: View {
 
 #Preview {
     MainTabView()
+        .environmentObject(AppViewModel())
+
 }

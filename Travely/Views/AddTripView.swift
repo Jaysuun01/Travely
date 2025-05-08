@@ -1,7 +1,7 @@
 import SwiftUI
 import Firebase
-import FirebaseFirestore
 import FirebaseAuth
+import FirebaseFirestore
 
 struct AddTripView: View {
     @Binding var selectedTab: Int
@@ -16,7 +16,7 @@ struct AddTripView: View {
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     private let db = Firestore.firestore()
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -171,16 +171,12 @@ struct AddTripView: View {
             errorMessage = "Not signed in."
             return
         }
-
+        
         isSaving = true
         errorMessage = ""
-
-<<<<<<< HEAD
-#Preview {
-    AddTripView()
-        .environmentObject(AppViewModel())
-
-=======
+    }
+}
+/*=======
         let tripRef = db.collection("trips").document()
         let tripId = tripRef.documentID
 
@@ -210,4 +206,4 @@ struct AddTripView: View {
         }
     }
 >>>>>>> main
-}
+}*/

@@ -16,7 +16,7 @@ struct InputView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
-                .font(.caption)
+                .font(.custom("Inter-Regular", size: 17))
                 .foregroundColor(.gray)
 
             if isSecureField {

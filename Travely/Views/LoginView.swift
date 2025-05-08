@@ -13,24 +13,26 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showSignUp = false
     @State private var errorMessage: String?
+    @State private var keyboardShown = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-//                Image("loginBackground")
-//                    .resizable()
-//                    .scaledToFill()
-//                    .ignoresSafeArea()
-//                    .mask(
-//                        LinearGradient(
-//                            gradient: Gradient(stops: [
-//                                .init(color: Color(red: 54/255, green: 54/255, blue: 54/255), location: 0.0),
-//                                .init(color: .clear, location: 0.5)
-//                            ]),
-//                            startPoint: .bottom,
-//                            endPoint: .top
-//                        )
-//                    )
+                Image("loginBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                    .ignoresSafeArea(.keyboard)
+                    .mask(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color(red: 54/255, green: 54/255, blue: 54/255), location: 0.0),
+                                .init(color: .clear, location: 0.25)
+                            ]),
+                            startPoint: .bottom,
+                            endPoint: .top
+                        )
+                    )
             
                 VStack {
                     if !viewModel.isAuthenticated {
@@ -38,27 +40,7 @@ struct LoginView: View {
                             .font(.custom("Inter-Regular", size: 64))
                             .fontWeight(.black)
                             .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
-                            .padding(.top, -100)
-
-                        if biometricsAvailable {
-                            Toggle(isOn: $viewModel.biometricEnabled) {
-                                HStack {
-                                    Image(systemName: "faceid")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 25, height: 20)
-                                        .padding(.trailing, 1)
-                                    Text("Require Face ID to Enter")
-                                }
-                                .font(.custom("Inter-Regular", size: 17))
-                            }
-                            .toggleStyle(CheckboxToggleStyle())
-                            .frame(maxWidth: 224)
-                            .padding()
-                            .background(Color.black)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
+                            .padding(.top, -50)
 
                         // Email & Password Sign-in
                         VStack(spacing: 24) {
@@ -73,8 +55,30 @@ struct LoginView: View {
                                       placeholder: "Enter your password",
                                       isSecureField: true)
                         }
+                        .frame(width: UIScreen.main.bounds.width - 32)
                         .padding(.horizontal)
-                        .padding(.top, 20)
+                        .padding()
+                        
+                        if biometricsAvailable {
+                            Toggle(isOn: $viewModel.biometricEnabled) {
+                                HStack {
+                                    Image(systemName: "faceid")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 20)
+                                        .padding(.trailing, 1)
+                                    Text("Require Face ID to Enter")
+                                }
+                                .font(.custom("Inter-Regular", size: 17))
+                            }
+                            .toggleStyle(CheckboxToggleStyle())
+                            .frame(width: UIScreen.main.bounds.width - 32)
+                            .frame(height: 32)
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                        }
 
                         // Sign In button
                         Button {
@@ -82,7 +86,7 @@ struct LoginView: View {
                         } label: {
                             HStack {
                                 Text("SIGN IN")
-                                    .font(.headline)
+                                    .font(.custom("Inter-Regular", size: 20))
                                     .fontWeight(.semibold)
                                 Image(systemName: "chevron.right")
                             }
@@ -112,7 +116,7 @@ struct LoginView: View {
                                 Text("Sign Up")
                                     .fontWeight(.bold)
                             }
-                            .font(.system(size: 14))
+                            .font(.custom("Inter-Regular", size: 14))
                         }
                     }
                 }
@@ -123,11 +127,14 @@ struct LoginView: View {
                     checkBiometricAvailability()
                 }
             }
+            .navigationBarHidden(true)
         }
         .sheet(isPresented: $showSignUp) {
             SignUpView()
                 .environmentObject(viewModel)
         }
+        .toolbar(.hidden, for: .navigationBar)   // hide nav bar
+        .ignoresSafeArea(.keyboard)
     }
 
     private func handleEmailSignIn() {
@@ -224,21 +231,21 @@ struct LoginView: View {
 
 struct CheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(systemName: configuration.isOn ? "checkmark.square" : "square")
                 .resizable()
                 .frame(width: 16, height: 16)
                 .foregroundColor(.gray)
-                .onTapGesture {
-                    withAnimation {
-                        configuration.isOn.toggle()
-                    }
-                }
 
-            configuration.label
+            configuration.label               // “Require Face ID …”
+        }
+        .contentShape(Rectangle())             // ⇠ expands the tap area
+        .onTapGesture {
+            withAnimation { configuration.isOn.toggle() }
         }
     }
 }
+
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {

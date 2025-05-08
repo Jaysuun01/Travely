@@ -6,3 +6,4 @@ struct Trip: Identifiable {
     let date: String
     let imageName: String
 }
+

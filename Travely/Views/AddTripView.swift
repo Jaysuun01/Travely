@@ -23,4 +23,6 @@ struct AddTripView: View {
 
 #Preview {
     AddTripView()
+        .environmentObject(AppViewModel())
+
 }

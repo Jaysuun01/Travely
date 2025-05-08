@@ -9,90 +9,138 @@ struct LoginView: View {
     @EnvironmentObject var viewModel: AppViewModel
     @State private var biometricsAvailable = false
     @State private var biometricTriggered = false
+    @State private var email = ""
+    @State private var password = ""
+    @State private var showSignUp = false
+    @State private var errorMessage: String?
 
     var body: some View {
-        ZStack {
-            Image("loginBackground")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-                .mask(
-                    LinearGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: Color(red: 54/255, green: 54/255, blue: 54/255), location: 0.0),
-                            .init(color: .clear, location: 0.5)
-                        ]),
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                )
-                .edgesIgnoringSafeArea(.all)
+        NavigationView {
+            ZStack {
+//                Image("loginBackground")
+//                    .resizable()
+//                    .scaledToFill()
+//                    .ignoresSafeArea()
+//                    .mask(
+//                        LinearGradient(
+//                            gradient: Gradient(stops: [
+//                                .init(color: Color(red: 54/255, green: 54/255, blue: 54/255), location: 0.0),
+//                                .init(color: .clear, location: 0.5)
+//                            ]),
+//                            startPoint: .bottom,
+//                            endPoint: .top
+//                        )
+//                    )
+            
+                VStack {
+                    if !viewModel.isAuthenticated {
+                        Text("Travely")
+                            .font(.custom("Inter-Regular", size: 64))
+                            .fontWeight(.black)
+                            .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
+                            .padding(.top, -100)
 
-            VStack {
-                if !viewModel.isAuthenticated {
-                    Text("Travely")
-                        .font(.custom("Inter-Regular", size: 64))
-                        .fontWeight(.black)
-                        .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
-                        .padding(.top, -200)
-
-                    if biometricsAvailable {
-                        Button(action: {
-                            if viewModel.biometricEnabled {
-                                // Disable Face ID
-                                viewModel.biometricEnabled = false
-                                viewModel.isBioAuth = false
-                                print("✅ Face ID disabled")
-                            } else {
-                                // Just enable Face ID for next sign-in
-                                viewModel.biometricEnabled = true
-                                print("✅ Face ID enabled for next sign-in")
+                        if biometricsAvailable {
+                            Toggle(isOn: $viewModel.biometricEnabled) {
+                                HStack {
+                                    Image(systemName: "faceid")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 20)
+                                        .padding(.trailing, 1)
+                                    Text("Require Face ID to Enter")
+                                }
+                                .font(.custom("Inter-Regular", size: 17))
                             }
-                        }) {
-                            HStack {
-                                Image(systemName: "faceid")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 20)
-                                    .padding(.trailing, 1)
-                                Text("Require Face ID to Enter")
-                                Toggle(isOn: $viewModel.biometricEnabled) {}
-                                    .toggleStyle(CheckboxToggleStyle())
-                                    .disabled(true)
-                                    .padding()
-                            }
-                            
-                            .font(.custom("Inter-Regular", size: 17))
+                            .toggleStyle(CheckboxToggleStyle())
                             .frame(maxWidth: 224)
-                            .background(.black)
+                            .padding()
+                            .background(Color.black)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                         }
+
+                        // Email & Password Sign-in
+                        VStack(spacing: 24) {
+                            InputView(text: $email,
+                                      title: "Email Address",
+                                      placeholder: "example@gmail.com")
+                            .autocapitalization(.none)
+                            .textInputAutocapitalization(.never)
+
+                            InputView(text: $password,
+                                      title: "Password",
+                                      placeholder: "Enter your password",
+                                      isSecureField: true)
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+
+                        // Sign In button
+                        Button {
+                            handleEmailSignIn()
+                        } label: {
+                            HStack {
+                                Text("SIGN IN")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                Image(systemName: "chevron.right")
+                            }
+                            .foregroundColor(.white)
+                            .frame(width: UIScreen.main.bounds.width - 32, height: 48)
+                        }
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .padding(.top, 24)
+
+                        if let errorMessage = errorMessage {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .font(.footnote)
+                                .padding(.horizontal)
+                        }
+
+                        GoogleSignInButton(action: handleGoogleSignIn)
+                            .buttonStyle(.borderedProminent)
+                            .frame(width: 200, height: 50)
+                            .padding()
+
+                        // Sign Up Navigation
+                        NavigationLink(destination: SignUpView().environmentObject(viewModel)) {
+                            HStack(spacing: 3) {
+                                Text("Don't have an account?")
+                                Text("Sign Up")
+                                    .fontWeight(.bold)
+                            }
+                            .font(.system(size: 14))
+                        }
                     }
-                    /*
-                    Toggle(isOn: $viewModel.biometricEnabled) {
-                        Text("Always use FaceID to Sign in")
-                            .font(.custom("Inter-Regular", size: 12))
-                            .foregroundColor(.gray)
-                    }
-                        .toggleStyle(CheckboxToggleStyle())
-                        .disabled(true)
-                        .padding()
-                     */
-                    GoogleSignInButton(action: handleGoogleSignIn)
-                        .buttonStyle(.borderedProminent)
-                        .frame(width: 200, height: 50)
-                        .padding()
+                }
+                .onTapGesture {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+                .onAppear {
+                    checkBiometricAvailability()
                 }
             }
-            .onAppear {
-                
-                checkBiometricAvailability()
+        }
+        .sheet(isPresented: $showSignUp) {
+            SignUpView()
+                .environmentObject(viewModel)
+        }
+    }
 
-                // Only check biometric availability
-                checkBiometricAvailability()
+    private func handleEmailSignIn() {
+        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    errorMessage = error.localizedDescription
+                    print("❌ Email sign-in failed:", error.localizedDescription)
+                } else {
+                    print("✅ Signed in with email:", authResult?.user.uid ?? "")
+                    viewModel.signIn(with: authResult?.user.displayName)
+                }
             }
-
         }
     }
 
@@ -106,11 +154,9 @@ struct LoginView: View {
                 DispatchQueue.main.async {
                     if success {
                         print("✅ Biometric auth success")
-                        // Don't set biometricEnabled here, it's a user preference
                         self.viewModel.isBioAuth = true
                     } else {
                         print("❌ Biometric auth failed:", error?.localizedDescription ?? "Unknown error")
-                        // On failure, reset the state
                         self.viewModel.isBioAuth = false
                     }
                 }
@@ -126,11 +172,9 @@ struct LoginView: View {
         let context = LAContext()
         var error: NSError?
 
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            biometricsAvailable = true
-        } else {
-            biometricsAvailable = false
-            print("Biometric auth not available: \(error?.localizedDescription ?? "Unknown error")")
+        biometricsAvailable = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+        if !biometricsAvailable {
+            print("❌ Biometric auth not available:", error?.localizedDescription ?? "Unknown error")
         }
     }
 
@@ -148,7 +192,7 @@ struct LoginView: View {
         }
 
         GIDSignIn.sharedInstance.signIn(withPresenting: presenter) { result, error in
-            if let error {
+            if let error = error {
                 print("❌ Google sign‑in failed:", error.localizedDescription)
                 return
             }
@@ -166,15 +210,13 @@ struct LoginView: View {
                 accessToken: user.accessToken.tokenString
             )
 
-            Auth.auth().signIn(with: credential) { [self] authResult, error in
-                if let error {
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
                     print("❌ Firebase sign‑in failed:", error.localizedDescription)
                     return
                 }
                 print("✅ Firebase sign‑in OK for", authResult?.user.uid ?? "")
                 viewModel.signIn(with: authResult?.user.displayName)
-                
-                // Don't prompt for Face ID here - RootView will handle it
             }
         }
     }
@@ -198,7 +240,9 @@ struct CheckboxToggleStyle: ToggleStyle {
     }
 }
 
-#Preview {
-    LoginView()
-        .environmentObject(AppViewModel())
+struct LoginView_Previews: PreviewProvider {
+    static var previews: some View {
+        LoginView()
+            .environmentObject(AppViewModel())
+    }
 }

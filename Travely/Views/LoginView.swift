@@ -93,7 +93,7 @@ struct LoginView: View {
                             .foregroundColor(.white)
                             .frame(width: UIScreen.main.bounds.width - 32, height: 48)
                         }
-                        .background(Color.blue)
+                        .background(Color(red: 244/255, green: 144/255, blue: 82/255))
                         .cornerRadius(10)
                         .padding(.top, 24)
 
@@ -117,6 +117,7 @@ struct LoginView: View {
                                     .fontWeight(.bold)
                             }
                             .font(.custom("Inter-Regular", size: 14))
+                            .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
                         }
                     }
                 }

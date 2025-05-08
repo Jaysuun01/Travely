@@ -14,33 +14,27 @@ struct CustomNavigationBar: View {
             HStack {
                 Spacer()
                 Button(action: { selectedTab = 0 }) {
-                    VStack(spacing: 6) {
+                    VStack(spacing: 14) {
                         Image(systemName: "house.fill")
                             .font(.system(size: 24))
-                        Text("Home")
-                            .font(.system(size: 10))
                     }
                     .foregroundColor(selectedTab == 0 ? accentColor : .gray)
                 }
                 
                 Spacer()
                 Button(action: { selectedTab = 1 }) {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 24))
-                        Text("Add")
-                            .font(.system(size: 10))
                     }
                     .foregroundColor(selectedTab == 1 ? accentColor : .gray)
                 }
                 
                 Spacer()
                 Button(action: { selectedTab = 2 }) {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 14) {
                         Image(systemName: "person.fill")
                             .font(.system(size: 24))
-                        Text("Profile")
-                            .font(.system(size: 10))
                     }
                     .foregroundColor(selectedTab == 2 ? accentColor : .gray)
                 }

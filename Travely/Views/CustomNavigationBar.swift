@@ -5,16 +5,17 @@ struct CustomNavigationBar: View {
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     var body: some View {
-        ZStack {
-            // Background
-            Color.black.opacity(0.8)
-                .edgesIgnoringSafeArea(.bottom)
+        VStack(spacing: 2) {
+            // Top border
+            Rectangle()
+                .fill(accentColor)
+                .frame(height: 1)
             
             // Tab buttons
             HStack {
                 Spacer()
                 Button(action: { selectedTab = 0 }) {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 8) {
                         Image(systemName: "house.fill")
                             .font(.system(size: 24))
                     }
@@ -23,7 +24,7 @@ struct CustomNavigationBar: View {
                 
                 Spacer()
                 Button(action: { selectedTab = 1 }) {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 8) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 24))
                     }
@@ -32,7 +33,7 @@ struct CustomNavigationBar: View {
                 
                 Spacer()
                 Button(action: { selectedTab = 2 }) {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 8) {
                         Image(systemName: "person.fill")
                             .font(.system(size: 24))
                     }
@@ -40,15 +41,12 @@ struct CustomNavigationBar: View {
                 }
                 Spacer()
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 10)
+            .padding(.bottom, 0)
+            .background(Color.black)
         }
-        .frame(height: 49)
-        .overlay(
-            Rectangle()
-                .fill(accentColor)
-                .frame(height: 1),
-            alignment: .top
-        )
+        .background(Color.black)
+        .frame(height: 15)
     }
 }
 

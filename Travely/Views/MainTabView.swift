@@ -6,6 +6,8 @@ struct MainTabView: View {
     
     var body: some View {
         ZStack {
+            Color.black.ignoresSafeArea()
+            
             TabView(selection: $selectedTab) {
                 HomeView()
                     .tag(0)
@@ -20,6 +22,7 @@ struct MainTabView: View {
             VStack {
                 Spacer()
                 CustomNavigationBar(selectedTab: $selectedTab)
+                    .background(Color.black)
             }
         }
         .ignoresSafeArea(.keyboard)

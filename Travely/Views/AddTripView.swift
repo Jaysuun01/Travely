@@ -146,13 +146,13 @@ struct AddTripView: View {
                     .padding(.bottom, 30)
                 }
             }
+            .ignoresSafeArea(.container, edges: .bottom)
             .onAppear {
                 resetFields()
             }
             .onTapGesture {
                 UIApplication.shared.endEditing()
             }
-            .navigationBarHidden(true)
         }
     }
     
@@ -174,9 +174,7 @@ struct AddTripView: View {
         
         isSaving = true
         errorMessage = ""
-    }
-}
-/*=======
+        
         let tripRef = db.collection("trips").document()
         let tripId = tripRef.documentID
 
@@ -205,5 +203,4 @@ struct AddTripView: View {
             }
         }
     }
->>>>>>> main
-}*/
+}

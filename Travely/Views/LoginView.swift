@@ -23,16 +23,19 @@ struct LoginView: View {
                     .scaledToFill()
                     .ignoresSafeArea()
                     .ignoresSafeArea(.keyboard)
-                    .mask(
+                    .overlay(
                         LinearGradient(
                             gradient: Gradient(stops: [
-                                .init(color: Color(red: 54/255, green: 54/255, blue: 54/255), location: 0.0),
-                                .init(color: .clear, location: 0.25)
+                                .init(color: .black, location: 0.0),
+                                .init(color: .black, location: 0.80),
+                                .init(color: .clear, location: 1.0)
+                                
                             ]),
-                            startPoint: .bottom,
-                            endPoint: .top
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                     )
+                    .ignoresSafeArea()
             
                 VStack {
                     if !viewModel.isAuthenticated {
@@ -128,13 +131,12 @@ struct LoginView: View {
                     checkBiometricAvailability()
                 }
             }
-            .navigationBarHidden(true)
+            .ignoresSafeArea(.keyboard)
         }
         .sheet(isPresented: $showSignUp) {
             SignUpView()
                 .environmentObject(viewModel)
         }
-        .toolbar(.hidden, for: .navigationBar)   // hide nav bar
         .ignoresSafeArea(.keyboard)
     }
 

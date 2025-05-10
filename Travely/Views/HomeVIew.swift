@@ -95,6 +95,7 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
+            .ignoresSafeArea(.container, edges: .bottom)
             .onAppear {
                 fetchUserTrips()
             }

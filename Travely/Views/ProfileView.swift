@@ -46,6 +46,7 @@ struct ProfileView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 

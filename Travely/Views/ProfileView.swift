@@ -2,155 +2,209 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject private var viewModel: AppViewModel
-    @State private var faceIDEnabled = false
+    
+    @AppStorage("faceIDEnabled") private var faceIDEnabled = false
+    
     @State private var newEmail = ""
+    @State private var tempEmail = ""
     @State private var showingPasswordChange = false
     @State private var newPassword = ""
     @State private var confirmPassword = ""
-    @State private var showingDeleteAccountAlert = false // Added state for the alert
-    @State private var showingDeleteDataAlert = false // Added state for the alert
-
+    @State private var showingDeleteAccountAlert = false
+    @State private var showingDeleteDataAlert = false
+    @State private var showingInvalidEmailAlert = false
+    @State private var showingPasswordMismatchAlert = false
+    @State private var showingEmailPopup = false
+    
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 ZStack {
-                    // Background color
-                    Color.black.edgesIgnoringSafeArea(.all)
-
+                    Color.black.ignoresSafeArea()
+                    
                     VStack {
                         Spacer()
-
-                        // Profile icon
+                        
                         Image(systemName: "person.circle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 100, height: 100)
                             .foregroundColor(accentColor)
                             .padding(.top, 20)
-
-                        // Username if available
+                        
                         if let userName = viewModel.userName {
                             Text(userName)
                                 .font(.title2)
                                 .foregroundColor(.white)
                                 .padding(.top, 8)
                         }
-
-                        // Face ID
+                        
                         Toggle("Enable Face ID", isOn: $faceIDEnabled)
                             .padding()
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(8)
                             .foregroundColor(.white)
                             .toggleStyle(SwitchToggleStyle(tint: accentColor))
-
-                        // Change Email Section
+                        
                         VStack(alignment: .leading) {
-                            Text("Change Email")
+                            HStack(spacing: 10) {
+                                Button("Change Email") {
+                                    showingEmailPopup = true
+                                }
+                                .frame(maxWidth: .infinity)
+                                .buttonStyle(PrimaryButtonStyle(color: accentColor))
+                                
+                                Button("Change Password") {
+                                    showingPasswordChange = true
+                                }
+                                .frame(maxWidth: .infinity)
+                                .buttonStyle(PrimaryButtonStyle(color: accentColor))
+                            }
+                            .padding(.top, 8)
+                            
+                            Button("Delete User Data") {
+                                showingDeleteDataAlert = true
+                            }
+                            .buttonStyle(DestructiveButtonStyle())
+                            .alert("Delete All Data", isPresented: $showingDeleteDataAlert) {
+                                Button("Delete", role: .destructive) {
+                                    viewModel.deleteUserData()
+                                }
+                                Button("Cancel", role: .cancel) { }
+                            } message: {
+                                Text("This action cannot be undone.")
+                            }
+                            
+                            Button("Delete Account") {
+                                showingDeleteAccountAlert = true
+                            }
+                            .buttonStyle(DestructiveButtonStyle())
+                            .alert("Delete Account", isPresented: $showingDeleteAccountAlert) {
+                                Button("Delete", role: .destructive) {
+                                    viewModel.deleteAccount()
+                                }
+                                Button("Cancel", role: .cancel) { }
+                            } message: {
+                                Text("Permanently delete your account? This action cannot be undone.")
+                            }
+                            
+                            Button(action: {
+                                viewModel.signOut()
+                            }) {
+                                Text("Log Out")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(accentColor)
+                                    .cornerRadius(10)
+                            }
+                            .padding(.horizontal, 50)
+                            .padding(.bottom, 100)
+                        }
+                    }
+                    .navigationBarBackButtonHidden(true)
+                    .sheet(isPresented: $showingPasswordChange) {
+                        VStack(spacing: 20) {
+                            Text("Change Password")
+                                .font(.title2)
+                                .bold()
                                 .foregroundColor(.white)
-                            TextField("New Email", text: $newEmail)
+                                .padding(.top)
+                            
+                            SecureField("New Password", text: $newPassword)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .autocapitalization(.none)
-                            Button("Confirm Email Change") {
-                                viewModel.changeEmail(to: newEmail)
+                                .padding(.horizontal)
+                                .accessibilityIdentifier("newPasswordField")
+                            
+                            SecureField("Confirm Password", text: $confirmPassword)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                                .accessibilityIdentifier("confirmPasswordField")
+                            
+                            Button("Confirm Password Change") {
+                                if newPassword == confirmPassword {
+                                    viewModel.changePassword(new: newPassword, confirm: confirmPassword)
+                                    showingPasswordChange = false
+                                } else {
+                                    showingPasswordMismatchAlert = true
+                                }
                             }
                             .buttonStyle(PrimaryButtonStyle(color: accentColor))
-                        }.padding()
-
-                        // Change Password
-                        Button("Change Password") {
-                            showingPasswordChange = true // Show the pop-up
+                            .padding(.bottom)
+                            
+                            Button("Cancel") {
+                                showingPasswordChange = false
+                            }
+                            .buttonStyle(SecondaryButtonStyle())
+                            .padding(.bottom)
                         }
-                        .buttonStyle(PrimaryButtonStyle(color: accentColor))
-                        .padding(.bottom)
-
-                        // Delete Data
-                        Button("Delete My Data") {
-                            showingDeleteDataAlert = true // Show delete data alert
-                        }
-                        .buttonStyle(DestructiveButtonStyle())
-                        .alert(isPresented: $showingDeleteDataAlert) {
-                            Alert(
-                                title: Text("Delete My Data"),
-                                message: Text("Are you sure you want to delete all your data? This action cannot be undone."),
-                                primaryButton: .destructive(Text("Delete")) {
-                                    viewModel.deleteUserData()
-                                },
-                                secondaryButton: .cancel()
-                            )
-                        }
-
-                        // Delete Account
-                        Button("Delete Account") {
-                            showingDeleteAccountAlert = true // Show the alert
-                        }
-                        .buttonStyle(DestructiveButtonStyle())
-                        .alert(isPresented: $showingDeleteAccountAlert) {
-                            Alert(
-                                title: Text("Delete Account"),
-                                message: Text("Are you sure you want to permanently delete your account? This action cannot be undone."),
-                                primaryButton: .destructive(Text("Delete")) {
-                                    viewModel.deleteAccount()
-                                },
-                                secondaryButton: .cancel()
-                            )
-                        }
-
-                        // Logout button
-                        Button(action: {
-                            viewModel.signOut()
-                        }) {
-                            Text("Log Out")
-                                .font(.headline)
+                        .padding()
+                        .background(Color.black)
+                        .cornerRadius(15)
+                    }
+                    .sheet(isPresented: $showingEmailPopup) {
+                        VStack(spacing: 20) {
+                            Text("Enter New Email")
+                                .font(.title3)
+                                .bold()
                                 .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(accentColor)
-                                .cornerRadius(10)
+
+                            TextField("New Email", text: $tempEmail)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .autocapitalization(.none)
+                                .padding(.horizontal)
+
+                            HStack(spacing: 10) {
+                                Button("Confirm") {
+                                    if isValidEmail(tempEmail) {
+                                        viewModel.changeEmail(to: tempEmail)
+                                        newEmail = tempEmail
+                                        showingEmailPopup = false
+                                    } else {
+                                        showingInvalidEmailAlert = true
+                                    }
+                                }
+                                .buttonStyle(PrimaryButtonStyle(color: accentColor))
+
+                                Button("Cancel") {
+                                    tempEmail = ""
+                                    showingEmailPopup = false
+                                }
+                                .buttonStyle(SecondaryButtonStyle())
+                            }
                         }
-                        .padding(.horizontal, 50)
-                        .padding(.bottom, 100)
+                        .padding()
+                        .background(Color.black)
+                        .cornerRadius(15)
                     }
-                }
-                .navigationBarBackButtonHidden(true)
-                .sheet(isPresented: $showingPasswordChange) {
-                    // The pop-up
-                    VStack(spacing: 20) {
-                        Text("Change Password")
-                            .font(.title2)
-                            .bold()
-                            .foregroundColor(.white)
-                            .padding(.top)
-
-                        SecureField("New Password", text: $newPassword)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .foregroundColor(.white) // text is visible on background
-                            .padding(.horizontal)
-
-                        SecureField("Confirm Password", text: $confirmPassword)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .foregroundColor(.white) // text is visible on background
-                            .padding(.horizontal)
-
-                        Button("Confirm Password Change") {
-                            viewModel.changePassword(new: newPassword, confirm: confirmPassword)
-                            showingPasswordChange = false // Close the pop-up - completed changePassword
-                        }
-                        .buttonStyle(PrimaryButtonStyle(color: accentColor))
-                        .padding(.bottom)
-
-                        Button("Cancel") {
-                            showingPasswordChange = false // Cancel changePassword
-                        }
-                        .buttonStyle(SecondaryButtonStyle())
-                        .padding(.bottom)
+                    .alert("Invalid Email", isPresented: $showingInvalidEmailAlert) {
+                        Button("OK", role: .cancel) { }
+                    } message: {
+                        Text("Please enter a valid email address.")
                     }
-                    .padding()
-                    .background(Color.secondary.opacity(0.2)) // Background for the pop-up changePassword
-                    .cornerRadius(15)
+                    .alert("Password Mismatch", isPresented: $showingPasswordMismatchAlert) {
+                        Button("OK", role: .cancel) { }
+                    } message: {
+                        Text("The passwords do not match.")
+                    }
                 }
             }
+        }
+    }
+    
+    // Email validation
+    func isValidEmail(_ email: String) -> Bool {
+        let regex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: email)
+    }
+    struct ProfileView_Previews: PreviewProvider {
+        static var previews: some View {
+            ProfileView()
+                .environmentObject(AppViewModel())
+                .preferredColorScheme(.dark)
         }
     }
 }

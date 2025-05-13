@@ -3,7 +3,8 @@
 //  Travely
 //
 //  Created by Ather Ahmed on 3/11/25.
-//
+//  Modified by Phat on 5/10/25
+
 import Foundation
 import FirebaseAuth
 import SwiftUI
@@ -12,15 +13,14 @@ class AppViewModel: ObservableObject {
     @Published var isAuthenticated = false
     @Published var isBioAuth = false
     @Published var userName: String? = nil
-    
+
     @AppStorage("biometricEnabled") var biometricEnabled: Bool = false
     private var authStateListener: AuthStateDidChangeListenerHandle?
-    
+
     init() {
-        // biometricEnabled is already stored in @AppStorage
         setupAuthStateListener()
     }
-    
+
     deinit {
         if let listener = authStateListener {
             Auth.auth().removeStateDidChangeListener(listener)
@@ -33,7 +33,7 @@ class AppViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if let user = user {
                     print("✅ Auth state changed: signed in as", user.uid)
-                    self.userName = user.displayName
+                    self.userName = user.displayName ?? user.email
                     self.isAuthenticated = true
                 } else {
                     print("ℹ️ Auth state changed: signed out")
@@ -46,26 +46,99 @@ class AppViewModel: ObservableObject {
     }
 
     func initializeAuthState() {
-        // Check if we have a Firebase user
         if let user = Auth.auth().currentUser {
-            self.userName = user.displayName
+            self.userName = user.displayName ?? user.email
             self.isAuthenticated = true
-            // isBioAuth will be false by default, requiring Face ID if enabled
         }
     }
 
     func signIn(with displayName: String?) {
         self.userName = displayName
-        // isAuthenticated will be set by auth state listener
     }
 
     func signOut() {
         do {
             try Auth.auth().signOut()
-            // State reset will be handled by auth state listener
             biometricEnabled = false
         } catch {
             print("❌ Error signing out:", error)
         }
     }
+
+    // Email Handling
+
+    func changeEmail(to newEmail: String) {
+        guard let user = Auth.auth().currentUser else {
+            print("⚠️ No user signed in.")
+            return
+        }
+
+        user.sendEmailVerification(beforeUpdatingEmail: newEmail) { [weak self] error in
+            if let error = error {
+                print("❌ Failed to send verification for email update:", error.localizedDescription)
+            } else {
+                print("✅ Email updated to \(newEmail)")
+                self?.userName = newEmail
+
+                user.sendEmailVerification { error in
+                    if let error = error {
+                        print("❌ Failed to send verification email:", error.localizedDescription)
+                    } else {
+                        print("📧 Verification email sent to \(newEmail)")
+                    }
+                }
+            }
+        }
+    }
+
+    // Password Handling
+
+    func changePassword(new: String, confirm: String) {
+        guard let user = Auth.auth().currentUser else {
+            print("⚠️ No user signed in.")
+            return
+        }
+
+        if new != confirm {
+            print("❌ Passwords do not match.")
+            return
+        }
+
+        user.updatePassword(to: new) { error in
+            if let error = error {
+                print("❌ Failed to update password:", error.localizedDescription)
+            } else {
+                print("🔐 Password successfully updated.")
+            }
+        }
+    }
+
+    // Data/Account Deletion
+
+    func deleteUserData() {
+        print("🗑️ User data deletion logic triggered.")
+        // Add Firestore deletion logic if applicable
+    }
+
+    func deleteAccount() {
+        guard let user = Auth.auth().currentUser else {
+            print("⚠️ No user signed in.")
+            return
+        }
+
+        user.delete { error in
+            if let error = error as NSError? {
+                if error.code == AuthErrorCode.requiresRecentLogin.rawValue {
+                    print("⚠️ Re-authentication required to delete account.")
+                    // Implement re-authentication flow here
+                } else {
+                    print("❌ Failed to delete account:", error.localizedDescription)
+                }
+            } else {
+                print("🧨 Account successfully deleted.")
+                self.biometricEnabled = false
+            }
+        }
+    }
 }
+

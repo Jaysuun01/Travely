@@ -64,35 +64,22 @@ struct ProfileView: View {
                         .padding()
                     }
                     
-                    // Bottom Buttons Section
+                    // Bottom Button Section
                     VStack(spacing: 16) {
                         Divider()
                             .background(Color.gray.opacity(0.3))
                         
-                        VStack(spacing: 12) {
-                            // Account Management Buttons
-                            Button("Delete User Data") {
-                                showingDeleteDataAlert = true
-                            }
-                            .buttonStyle(DestructiveButtonStyle())
-                            
-                            Button("Delete Account") {
-                                showingDeleteAccountAlert = true
-                            }
-                            .buttonStyle(DestructiveButtonStyle())
-                            
-                            // Log Out Button
-                            Button(action: {
-                                viewModel.signOut()
-                            }) {
-                                Text("Log Out")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(accentColor)
-                                    .cornerRadius(12)
-                            }
+                        // Log Out Button
+                        Button(action: {
+                            viewModel.signOut()
+                        }) {
+                            Text("Log Out")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(accentColor)
+                                .cornerRadius(12)
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 32)
@@ -114,7 +101,7 @@ struct ProfileView: View {
         .sheet(isPresented: $showingEditSheet) {
             NavigationView {
                 List {
-                    Section {
+                    Section(header: Text("Account Settings")) {
                         Button("Change Email") {
                             showingEditSheet = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -131,9 +118,24 @@ struct ProfileView: View {
                                 showingPasswordChange = true
                             }
                         }
+                    }
+                    
+                    Section(header: Text("Danger Zone")) {
                         Button("Delete User Data") {
+                            showingEditSheet = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showingDeleteDataAlert = true
+                            }
                         }
-                        Button("Delete Account")
+                        .foregroundColor(.red)
+                        
+                        Button("Delete Account") {
+                            showingEditSheet = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showingDeleteAccountAlert = true
+                            }
+                        }
+                        .foregroundColor(.red)
                     }
                 }
                 .navigationTitle("Edit Profile")
@@ -258,4 +260,3 @@ struct ProfileView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
-

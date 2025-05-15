@@ -8,23 +8,29 @@
 import Foundation
 import FirebaseAuth
 import SwiftUI
+import Network
 
 class AppViewModel: ObservableObject {
     @Published var isAuthenticated = false
     @Published var isBioAuth = false
     @Published var userName: String? = nil
+    @Published var isConnected = true // Network connectivity status
 
     @AppStorage("biometricEnabled") var biometricEnabled: Bool = false
     private var authStateListener: AuthStateDidChangeListenerHandle?
+    private var networkMonitor = NWPathMonitor()
+    private let networkQueue = DispatchQueue(label: "NetworkMonitor")
 
     init() {
         setupAuthStateListener()
+        startNetworkMonitoring()
     }
 
     deinit {
         if let listener = authStateListener {
             Auth.auth().removeStateDidChangeListener(listener)
         }
+        networkMonitor.cancel()
     }
 
     private func setupAuthStateListener() {
@@ -91,6 +97,29 @@ class AppViewModel: ObservableObject {
         }
     }
 
+    // Full Name Handling
+    
+    func updateFullName(to newFullName: String) {
+        guard let user = Auth.auth().currentUser else {
+            print("⚠️ No user signed in.")
+            return
+        }
+        
+        let changeRequest = user.createProfileChangeRequest()
+        changeRequest.displayName = newFullName
+        
+        changeRequest.commitChanges { [weak self] error in
+            if let error = error {
+                print("❌ Failed to update display name:", error.localizedDescription)
+            } else {
+                DispatchQueue.main.async {
+                    self?.userName = newFullName
+                    print("✅ Display name updated to \(newFullName)")
+                }
+            }
+        }
+    }
+
     // Password Handling
 
     func changePassword(new: String, confirm: String) {
@@ -139,6 +168,16 @@ class AppViewModel: ObservableObject {
                 self.biometricEnabled = false
             }
         }
+    }
+
+    private func startNetworkMonitoring() {
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+            DispatchQueue.main.async {
+                self?.isConnected = path.status == .satisfied
+                print("Network connectivity changed: \(path.status == .satisfied ? "Connected" : "Disconnected")")
+            }
+        }
+        networkMonitor.start(queue: networkQueue)
     }
 }
 

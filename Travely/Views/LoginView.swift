@@ -14,6 +14,9 @@ struct LoginView: View {
     @State private var showSignUp = false
     @State private var errorMessage: String?
     @State private var keyboardShown = false
+    
+    // Define the app's standard accent color
+    private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
 
     var body: some View {
         NavigationStack {
@@ -42,7 +45,7 @@ struct LoginView: View {
                         Text("Travely")
                             .font(.custom("Inter-Regular", size: 64))
                             .fontWeight(.black)
-                            .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
+                            .foregroundColor(accentColor)
                             .padding(.top, -50)
 
                         // Email & Password Sign-in
@@ -94,10 +97,10 @@ struct LoginView: View {
                                 Image(systemName: "chevron.right")
                             }
                             .foregroundColor(.white)
-                            .frame(width: UIScreen.main.bounds.width - 32, height: 48)
+                            .frame(width: 240, height: 48)
                         }
-                        .background(Color(red: 244/255, green: 144/255, blue: 82/255))
-                        .cornerRadius(10)
+                        .background(accentColor)
+                        .cornerRadius(5)
                         .padding(.top, 24)
 
                         if let errorMessage = errorMessage {
@@ -107,20 +110,43 @@ struct LoginView: View {
                                 .padding(.horizontal)
                         }
 
-                        GoogleSignInButton(action: handleGoogleSignIn)
-                            .buttonStyle(.borderedProminent)
-                            .frame(width: 200, height: 50)
-                            .padding()
+                        Button(action: handleGoogleSignIn) {
+                            HStack(spacing: 0) {
+                                // Logo container with fixed width for centering
+                                HStack {
+                                    Image("googleLogo")
+                                        .resizable()
+                                        .frame(width: 28, height: 28)
+                                }
+                                .frame(width: 48, height: 48)
+                                
+                                Text("Sign in with Google")
+                                    .font(.custom("Inter-Regular", size: 18))
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.black)
+                                Spacer()
+                            }
+                            .frame(width: 240, height: 48)
+                        }
+                        .background(Color.white)
+                        .cornerRadius(5)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        )
+                        .shadow(color: Color.black.opacity(0.07), radius: 2, x: 0, y: 2)
+                        .padding(.top, 12)
 
                         // Sign Up Navigation
                         NavigationLink(destination: SignUpView().environmentObject(viewModel)) {
-                            HStack(spacing: 3) {
+                            HStack(spacing: 5) {
                                 Text("Don't have an account?")
                                 Text("Sign Up")
                                     .fontWeight(.bold)
                             }
                             .font(.custom("Inter-Regular", size: 14))
-                            .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
+                            .foregroundColor(accentColor)
+                            .padding(.top, 10)
                         }
                     }
                 }
@@ -240,7 +266,7 @@ struct CheckboxToggleStyle: ToggleStyle {
                 .frame(width: 16, height: 16)
                 .foregroundColor(.gray)
 
-            configuration.label               // “Require Face ID …”
+            configuration.label               // "Require Face ID …"
         }
         .contentShape(Rectangle())             // ⇠ expands the tap area
         .onTapGesture {

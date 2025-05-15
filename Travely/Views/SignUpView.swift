@@ -16,72 +16,169 @@
         @State private var password = ""
         @State private var confirmPassword = ""
         @State private var errorMessage: String?
+        
+        // App theme accent color
+        private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
+
+        // Password requirements
+        private let passwordRequirements: [(String, (String) -> Bool)] = [
+            ("At least 8 characters", { $0.count >= 8 }),
+            ("At least one uppercase letter", { $0.range(of: "[A-Z]", options: .regularExpression) != nil }),
+            ("At least one lowercase letter", { $0.range(of: "[a-z]", options: .regularExpression) != nil }),
+            ("At least one number", { $0.range(of: "[0-9]", options: .regularExpression) != nil }),
+            ("At least one special character", { $0.range(of: "[^A-Za-z0-9]", options: .regularExpression) != nil })
+        ]
 
         var body: some View {
-            VStack {
-                Text("Travely")
-                    .font(.custom("Inter-Regular", size: 64))
-                    .fontWeight(.black)
-                    .foregroundColor(Color(red: 244/255, green: 144/255, blue: 82/255))
-                    .padding(.top, -100)
+            ZStack {
+                Color.black.ignoresSafeArea()
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 28) {
+                        // App title and headline
+                        VStack(spacing: 4) {
+                            Text("Travely")
+                                .font(.custom("Inter-Regular", size: 64))
+                                .fontWeight(.black)
+                                .foregroundColor(accentColor)
+                            Text("Create Your Account")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.top, 24)
 
-                Text("Sign Up Your Account")
-                    .font(.title)
-                    .bold()
+                        // Form fields
+                        VStack(spacing: 16) {
+                            // Email
+                            HStack(spacing: 12) {
+                                Image(systemName: "envelope.fill")
+                                    .foregroundColor(accentColor)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Email Address")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                    TextField("name@example.com", text: $email)
+                                        .foregroundColor(.white)
+                                        .autocapitalization(.none)
+                                }
+                            }
+                            .padding(16)
+                            .background(Color.white.opacity(0.07))
+                            .cornerRadius(12)
 
-                VStack(spacing: 24) {
-                    InputView(text: $email,
-                              title: "Email Address",
-                              placeholder: "name@example.com")
-                        .autocapitalization(.none)
+                            // Full Name
+                            HStack(spacing: 12) {
+                                Image(systemName: "person.fill")
+                                    .foregroundColor(accentColor)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Full Name")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                    TextField("Enter your name", text: $fullName)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .padding(16)
+                            .background(Color.white.opacity(0.07))
+                            .cornerRadius(12)
 
-                    InputView(text: $fullName,
-                              title: "Full Name",
-                              placeholder: "Enter your name")
+                            // Password
+                            HStack(spacing: 12) {
+                                Image(systemName: "lock.fill")
+                                    .foregroundColor(accentColor)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Password")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                    SecureField("Enter your password", text: $password)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .padding(16)
+                            .background(Color.white.opacity(0.07))
+                            .cornerRadius(12)
 
-                    InputView(text: $password,
-                              title: "Password",
-                              placeholder: "Enter your password",
-                              isSecureField: true)
+                            // Password requirements
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(passwordRequirements.enumerated()), id: \.offset) { idx, req in
+                                    let met = req.1(password)
+                                    HStack(spacing: 8) {
+                                        Image(systemName: met ? "checkmark.circle.fill" : "circle")
+                                            .foregroundColor(met ? .green : .gray)
+                                        Text(req.0)
+                                            .font(.caption)
+                                            .foregroundColor(met ? .green : .gray)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 16)
+                            .background(Color.white.opacity(0.07))
+                            .cornerRadius(12)
 
-                    InputView(text: $confirmPassword,
-                              title: "Confirm Password",
-                              placeholder: "Re-enter your password",
-                              isSecureField: true)
-                }
-                .padding(.horizontal)
-                .padding(.top, 12)
+                            // Confirm Password
+                            HStack(spacing: 12) {
+                                Image(systemName: "lock.shield.fill")
+                                    .foregroundColor(accentColor)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Confirm Password")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                    SecureField("Re-enter your password", text: $confirmPassword)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .padding(16)
+                            .background(Color.white.opacity(0.07))
+                            .cornerRadius(12)
+                        }
 
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
+                        // Error message
+                        if let errorMessage = errorMessage {
+                            Text(errorMessage)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
 
-                // Sign Up button
-                Button {
-                    handleSignUp()
-                } label: {
-                    HStack {
-                        Text("SIGN UP")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        Image(systemName: "chevron.right")
+                        // Buttons
+                        VStack(spacing: 12) {
+                            Button {
+                                handleSignUp()
+                            } label: {
+                                HStack {
+                                    Text("SIGN UP")
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                    Image(systemName: "chevron.right")
+                                }
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 54)
+                            }
+                            .background(accentColor)
+                            .cornerRadius(12)
+                            .shadow(color: accentColor.opacity(0.5), radius: 5, x: 0, y: 2)
+
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Cancel")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                            }
+                            .background(Color.gray.opacity(0.25))
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
+                        .padding(.bottom, 24)
                     }
-                    .foregroundColor(.white)
-                    .frame(width: UIScreen.main.bounds.width - 32, height: 48)
+                    .padding(.horizontal, 20)
                 }
-                .background(Color.blue)
-                .cornerRadius(10)
-                .padding(.top, 24)
-
-                Button("Cancel") {
-                    dismiss()
-                }
-                .padding(.top, 5)
             }
-            .padding()
         }
 
         private func handleSignUp() {

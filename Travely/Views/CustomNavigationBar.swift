@@ -5,48 +5,64 @@ struct CustomNavigationBar: View {
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     var body: some View {
-        VStack(spacing: 2) {
-            // Top border
-            Rectangle()
-                .fill(accentColor)
-                .frame(height: 1)
-            
-            // Tab buttons
+        VStack(spacing: 0) {
             HStack {
                 Spacer()
-                Button(action: { selectedTab = 0 }) {
-                    VStack(spacing: 8) {
-                        Image(systemName: "house.fill")
-                            .font(.system(size: 24))
-                    }
-                    .foregroundColor(selectedTab == 0 ? accentColor : .gray)
+                TabButton(
+                    imageName: "house.fill",
+                    title: "Home",
+                    isSelected: selectedTab == 0,
+                    accentColor: accentColor
+                ) {
+                    selectedTab = 0
                 }
-                
                 Spacer()
-                Button(action: { selectedTab = 1 }) {
-                    VStack(spacing: 8) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 24))
-                    }
-                    .foregroundColor(selectedTab == 1 ? accentColor : .gray)
+                TabButton(
+                    imageName: "plus.circle.fill",
+                    title: "Add",
+                    isSelected: selectedTab == 1,
+                    accentColor: accentColor
+                ) {
+                    selectedTab = 1
                 }
-                
                 Spacer()
-                Button(action: { selectedTab = 2 }) {
-                    VStack(spacing: 8) {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 24))
-                    }
-                    .foregroundColor(selectedTab == 2 ? accentColor : .gray)
+                TabButton(
+                    imageName: "person.fill",
+                    title: "Profile",
+                    isSelected: selectedTab == 2,
+                    accentColor: accentColor
+                ) {
+                    selectedTab = 2
                 }
                 Spacer()
             }
-            .padding(.vertical, 10)
-            .padding(.bottom, 0)
-            .background(Color.black)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .padding(.horizontal, 8)
+            .padding(.bottom, 1)
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .background(Color.black)
-        .frame(height: 15)
+    }
+}
+
+struct TabButton: View {
+    let imageName: String
+    let title: String
+    let isSelected: Bool
+    let accentColor: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: imageName)
+                    .font(.system(size: 22))
+                Text(title)
+                    .font(.system(size: 12, weight: .medium))
+            }
+            .foregroundColor(isSelected ? accentColor : .gray)
+        }
     }
 }
 

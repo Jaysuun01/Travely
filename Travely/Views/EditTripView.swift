@@ -1,3 +1,5 @@
+// Created by Jason Huynh
+
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth

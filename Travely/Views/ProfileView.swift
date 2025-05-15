@@ -1,10 +1,9 @@
 import SwiftUI
 import FirebaseAuth
+import LocalAuthentication
 
 struct ProfileView: View {
     @EnvironmentObject private var viewModel: AppViewModel
-    
-    @AppStorage("faceIDEnabled") private var faceIDEnabled = false
     
     @State private var newEmail = ""
     @State private var tempEmail = ""
@@ -98,7 +97,17 @@ struct ProfileView: View {
                                     .padding(.horizontal)
                                 
                                 VStack(spacing: 16) {
-                                    Toggle("Enable Face ID", isOn: $faceIDEnabled)
+                                    Toggle("Enable Face ID", isOn: Binding(
+                                        get: { viewModel.biometricEnabled },
+                                        set: { newValue in
+                                            if newValue {
+                                                // Verify device supports Face ID before enabling
+                                                checkAndEnableBiometrics()
+                                            } else {
+                                                viewModel.biometricEnabled = false
+                                            }
+                                        }
+                                    ))
                                         .padding()
                                         .background(Color.gray.opacity(0.2))
                                         .cornerRadius(12)
@@ -558,6 +567,40 @@ struct ProfileView: View {
             let visibleChars = min(3, username.count)
             let prefix = String(username.prefix(visibleChars))
             return prefix + String(repeating: "•", count: username.count - visibleChars) + "@" + domain
+        }
+    }
+    
+    // New function to check and enable biometric authentication
+    private func checkAndEnableBiometrics() {
+        let context = LAContext()
+        var error: NSError?
+        
+        // Check if the device can use Face ID
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            // Set the authentication flag immediately to prevent navigation issues
+            viewModel.isBioAuth = true
+            
+            // Pre-set the toggle state for responsive UI
+            viewModel.biometricEnabled = true
+            
+            // Prompt the user to authenticate with Face ID to confirm setup
+            let reason = "Confirm your identity to enable Face ID login"
+            
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, error in
+                DispatchQueue.main.async {
+                    if success {
+                        print("✅ Face ID authentication successful - enabling Face ID login")
+                        // Success already handled with pre-setting
+                    } else {
+                        print("❌ Face ID authentication failed:", error?.localizedDescription ?? "Unknown error")
+                        self.viewModel.biometricEnabled = false
+                        self.viewModel.isBioAuth = false
+                    }
+                }
+            }
+        } else {
+            print("⚠️ Face ID not available:", error?.localizedDescription ?? "Unknown error")
+            viewModel.biometricEnabled = false
         }
     }
 }

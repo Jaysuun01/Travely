@@ -157,12 +157,13 @@ struct LoginView: View {
                     checkBiometricAvailability()
                 }
             }
-            .ignoresSafeArea(.keyboard)
+            .navigationBarHidden(true)
         }
         .sheet(isPresented: $showSignUp) {
             SignUpView()
                 .environmentObject(viewModel)
         }
+        .toolbar(.hidden, for: .navigationBar)
         .ignoresSafeArea(.keyboard)
     }
 

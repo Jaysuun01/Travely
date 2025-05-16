@@ -18,5 +18,9 @@
 		<string>Inter-VariableFont_opsz,wght.ttf</string>
 		<string>Inter-Italic-VariableFont_opsz,wght.ttf</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to provide navigation features and show your position on the map.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to provide navigation features and show your position on the map.</string>
 </dict>
 </plist>

@@ -338,6 +338,7 @@ struct TripDetailView: View {
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     @State private var showPlacePicker = false
     @State private var showEdit = false
+    @State private var showNavigation = false
     private let db = Firestore.firestore()
 
     func addLocationToTrip(_ location: Location) {
@@ -545,7 +546,7 @@ struct TripDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showEdit = true }) {
-                        Image(systemName: "pencil")
+                        Image(systemName: "square.and.pencil")
                     }
                 }
             }
@@ -561,13 +562,20 @@ struct TripDetailView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Button(action: { showPlacePicker = true }) {
-                        Image(systemName: "plus.circle.fill")
+                    Menu {
+                        Button(action: { showPlacePicker = true }) {
+                            Label("Add Location", systemImage: "plus.app.fill")
+                        }
+                        Button(action: { showNavigation = true }) {
+                            Label("Navigation", systemImage: "map.fill")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle.fill")
                             .font(.system(size: 48))
                             .foregroundColor(accentColor)
                             .shadow(radius: 6)
                     }
-                    .accessibilityLabel("Add Place")
+                    .accessibilityLabel("Location Options")
                     .padding(.trailing, 18)
                     .padding(.bottom, 100)
                 }
@@ -584,6 +592,11 @@ struct TripDetailView: View {
                     }
                 }
             ), defaultLocationName: trip.destination)
+        }
+        .sheet(isPresented: $showNavigation) {
+            NavigationStack {
+                NavigationMapView(locations: trip.locations)
+            }
         }
     }
 }

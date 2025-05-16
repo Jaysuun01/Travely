@@ -577,20 +577,15 @@ struct ProfileView: View {
         
         // Check if the device can use Face ID
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            // Set the authentication flag immediately to prevent navigation issues
             viewModel.isBioAuth = true
-            
-            // Pre-set the toggle state for responsive UI
             viewModel.biometricEnabled = true
             
-            // Prompt the user to authenticate with Face ID to confirm setup
             let reason = "Confirm your identity to enable Face ID login"
             
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, error in
                 DispatchQueue.main.async {
                     if success {
                         print("✅ Face ID authentication successful - enabling Face ID login")
-                        // Success already handled with pre-setting
                     } else {
                         print("❌ Face ID authentication failed:", error?.localizedDescription ?? "Unknown error")
                         self.viewModel.biometricEnabled = false

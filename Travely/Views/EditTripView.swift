@@ -14,9 +14,13 @@ struct EditTripView: View {
     @State private var destination: String
     @State private var startDate: Date
     @State private var endDate: Date
+    @State private var newEmail: String = ""
+    @State private var existingCollaborators: [String] = []
+    @State private var collaborators: [String] = []
     @State private var notes: String
     @State private var isSaving = false
     @State private var errorMessage = ""
+    
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     private let db = Firestore.firestore()
@@ -29,10 +33,13 @@ struct EditTripView: View {
         self._destination = State(initialValue: trip.destination)
         self._startDate = State(initialValue: trip.startDate)
         self._endDate = State(initialValue: trip.endDate)
+        self._existingCollaborators = State(initialValue: trip.collaborators)
+        self._collaborators = State(initialValue: [])
         self._notes = State(initialValue: trip.notes)
     }
     
     var body: some View {
+        let allCollaborators = existingCollaborators + collaborators
         NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
@@ -111,6 +118,58 @@ struct EditTripView: View {
                                     }
                                     Spacer()
                                 }
+                                VStack(alignment: .leading, spacing: 12) {
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "mappin.and.ellipse")
+                                            .resizable()
+                                            .frame(width: 28, height: 28)
+                                            .foregroundColor(.orange)
+
+                                        TextField("Add Collaborator Emails", text: $newEmail)
+                                            .font(.headline)
+                                            .padding(12)
+                                            .background(Color.white.opacity(0.08))
+                                            .cornerRadius(10)
+                                            .foregroundColor(.white)
+                                            .onSubmit {
+                                                addEmail()
+                                            }
+                                    }
+
+                                    // Show list of added collaborators
+                                    if !allCollaborators.isEmpty {
+                                        ScrollView(.horizontal, showsIndicators: false) {
+                                            HStack {
+                                                ForEach(allCollaborators, id: \.self) { email in
+                                                    let isCurrentUser = email == Auth.auth().currentUser?.email
+                                                    let label = isCurrentUser ? "Owner" : email
+
+                                                    HStack(spacing: 6) {
+                                                        Text(label)
+                                                            .font(.caption)
+                                                            .foregroundColor(.white)
+
+                                                        Button {
+                                                            if collaborators.contains(email) {
+                                                                collaborators.removeAll { $0 == email }
+                                                            } else {
+                                                                existingCollaborators.removeAll { $0 == email }
+                                                            }
+                                                        } label: {
+                                                            Image(systemName: "xmark.circle.fill")
+                                                                .foregroundColor(.gray)
+                                                        }
+                                                        .disabled(isCurrentUser) // Optional: prevent removing yourself
+                                                    }
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 6)
+                                                    .background(Color.white.opacity(0.15))
+                                                    .cornerRadius(8)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 HStack(alignment: .top, spacing: 12) {
                                     Image(systemName: "note.text")
                                         .resizable()
@@ -177,6 +236,9 @@ struct EditTripView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear{
+                fetchExistingCollaboratorsIfNeeded()
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
@@ -187,11 +249,34 @@ struct EditTripView: View {
         }
     }
     
+    private func addEmail() {
+        let email = newEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty, !collaborators.contains(email) else { return }
+
+        collaborators.append(email)
+        newEmail = ""   // Clear input field
+    }
+    
+    private func fetchExistingCollaboratorsIfNeeded() {
+        // If editing an existing trip, pass the trip ID and fetch
+
+        let tripId = trip.tripId
+
+        db.collection("trips").document(tripId).getDocument { snapshot, error in
+            if let data = snapshot?.data(),
+               let saved = data["collaborators"] as? [String] {
+                self.existingCollaborators = saved
+            }
+        }
+    }
+    
     private func saveTrip() {
+        addEmail()
         guard let userId = Auth.auth().currentUser?.uid else {
             errorMessage = "Not signed in."
             return
         }
+        let combined = Array(Set(existingCollaborators + collaborators))
         isSaving = true
         errorMessage = ""
         let tripRef = db.collection("trips").document(trip.tripId)
@@ -200,13 +285,14 @@ struct EditTripView: View {
             "tripName": tripName,
             "destination": destination,
             "ownerId": trip.ownerId,
-            "collaborators": trip.collaborators,
+            "collaborators": combined,
             "notes": notes,
             "startDate": Timestamp(date: startDate),
             "endDate": Timestamp(date: endDate),
             "locations": trip.locations.map { try? Firestore.Encoder().encode($0) },
             "createdAt": trip.createdAt ?? FieldValue.serverTimestamp()
         ]
+        print("👥 Collaborators:", collaborators)
         tripRef.setData(data) { error in
             isSaving = false
             if let error = error {
@@ -217,6 +303,7 @@ struct EditTripView: View {
                 trip.destination = destination
                 trip.startDate = startDate
                 trip.endDate = endDate
+                trip.collaborators = combined
                 trip.notes = notes
                 onSave?(trip)
                 presentationMode.wrappedValue.dismiss()

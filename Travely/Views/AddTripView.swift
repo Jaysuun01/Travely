@@ -10,6 +10,9 @@ struct AddTripView: View {
     @State private var startDate = Date()
     @State private var endDate = Date()
     @State private var notes = ""
+    @State private var newEmail: String = ""
+    @State private var existingCollaborators: [String] = []
+    @State private var collaborators: [String] = []
     
     @State private var isSaving = false
     @State private var errorMessage = ""
@@ -96,6 +99,49 @@ struct AddTripView: View {
                                     }
                                     Spacer()
                                 }
+                                VStack(alignment: .leading, spacing: 12) {
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "mappin.and.ellipse")
+                                            .resizable()
+                                            .frame(width: 28, height: 28)
+                                            .foregroundColor(.orange)
+
+                                        TextField("Add Collaborator Emails", text: $newEmail)
+                                            .font(.headline)
+                                            .padding(12)
+                                            .background(Color.white.opacity(0.08))
+                                            .cornerRadius(10)
+                                            .foregroundColor(.white)
+                                            .onSubmit {
+                                                addEmail()
+                                            }
+                                    }
+
+                                    // Show list of added collaborators
+                                    if !collaborators.isEmpty {
+                                        ScrollView(.horizontal, showsIndicators: false) {
+                                            HStack {
+                                                ForEach(collaborators, id: \.self) { email in
+                                                    HStack(spacing: 6) {
+                                                        Text(email)
+                                                            .font(.caption)
+                                                            .foregroundColor(.white)
+                                                        Button {
+                                                            collaborators.removeAll { $0 == email }
+                                                        } label: {
+                                                            Image(systemName: "xmark.circle.fill")
+                                                                .foregroundColor(.gray)
+                                                        }
+                                                    }
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 6)
+                                                    .background(Color.white.opacity(0.15))
+                                                    .cornerRadius(8)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 HStack(alignment: .top, spacing: 12) {
                                     Image(systemName: "note.text")
                                         .resizable()
@@ -156,17 +202,27 @@ struct AddTripView: View {
         }
     }
     
+    private func addEmail() {
+        let email = newEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty, !collaborators.contains(email) else { return }
+
+        collaborators.append(email)
+        newEmail = ""   // Clear input field
+    }
+    
     private func resetFields() {
         tripName = ""
         destination = ""
         startDate = Date()
         endDate = Date()
+        collaborators = []
         notes = ""
         errorMessage = ""
         isSaving = false
     }
     
     func saveTrip() {
+        addEmail()
         guard let userId = Auth.auth().currentUser?.uid else {
             errorMessage = "Not signed in."
             return
@@ -183,14 +239,14 @@ struct AddTripView: View {
             "tripName": tripName,
             "destination": destination,
             "ownerId": userId,
-            "collaborators": [],
+            "collaborators": collaborators,
             "notes": notes,
             "startDate": Timestamp(date: startDate),
             "endDate": Timestamp(date: endDate),
             "locations": [],
             "createdAt": FieldValue.serverTimestamp()
         ]
-        
+        print("👥 Collaborators:", collaborators)
         tripRef.setData(data) { error in
             isSaving = false
             if let error = error {

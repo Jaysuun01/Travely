@@ -77,8 +77,8 @@ struct HomeView: View {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(filteredTrips, id: \.tripId) { trip in
-                                NavigationLink(destination: TripDetailView(trip: trip)) {
-                                    TripCard(trip: trip, onDelete: { deleteTrip(trip) })
+                                NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
+                                    TripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .transition(.opacity)
@@ -113,12 +113,13 @@ struct HomeView: View {
     
     func fetchUserTrips() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let email = Auth.auth().currentUser?.email else { return }
         
         // Use a single listener for both owned and collaborative trips
         let query = db.collection("trips")
             .whereFilter(Filter.orFilter([
                 Filter.whereField("ownerId", isEqualTo: uid),
-                Filter.whereField("collaborators", arrayContains: uid)
+                Filter.whereField("collaborators", arrayContains: email)
             ]))
         
         query.addSnapshotListener { snapshot, error in
@@ -239,6 +240,7 @@ struct HomeView: View {
 struct TripCard: View {
     let trip: Trip
     let onDelete: () -> Void
+    let isShared: Bool
     let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     @State private var showDeleteConfirmation = false
@@ -276,6 +278,15 @@ struct TripCard: View {
                     Text(trip.destination)
                         .font(.system(size: 15))
                         .foregroundColor(accentColor)
+                    if isShared {
+                        Label("Shared", systemImage: "person.2.fill")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(8)
+                    }
                 }
                 
                 Spacer()
@@ -339,6 +350,7 @@ struct TripDetailView: View {
     @State private var showPlacePicker = false
     @State private var showEdit = false
     @State private var showNavigation = false
+    let isShared: Bool
     private let db = Firestore.firestore()
 
     func addLocationToTrip(_ location: Location) {
@@ -446,6 +458,18 @@ struct TripDetailView: View {
                                     Text(trip.destination)
                                         .font(.title3)
                                         .foregroundColor(accentColor)
+                                }
+                                if isShared {
+                                    HStack {
+                                        Spacer()
+                                        Label("Shared", systemImage: "person.2.fill")
+                                            .font(.caption2)
+                                            .foregroundColor(.orange)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.white.opacity(0.08))
+                                            .cornerRadius(8)
+                                    }
                                 }
                                 Spacer()
                             }

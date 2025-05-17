@@ -6,15 +6,21 @@
 //  Modified by Phat on 5/10/25
 
 import Foundation
+import FirebaseFirestore
 import FirebaseAuth
 import SwiftUI
 import Network
 
+@MainActor
 class AppViewModel: ObservableObject {
     @Published var isAuthenticated = false
+    @AppStorage("verificationPromptSeen") var verificationPromptSeen: Bool = false { didSet { recomputeAuth() }}
+    private var signedInAccordingToFirebase = false { didSet { recomputeAuth() } }
     @Published var isBioAuth = false
     @Published var userName: String? = nil
     @Published var isConnected = true // Network connectivity status
+    @Published var emailVerified = false
+    private var userListener: ListenerRegistration?
 
     @AppStorage("biometricEnabled") var biometricEnabled: Bool = false
     private var authStateListener: AuthStateDidChangeListenerHandle?
@@ -24,6 +30,9 @@ class AppViewModel: ObservableObject {
     init() {
         setupAuthStateListener()
         startNetworkMonitoring()
+        if let u = Auth.auth().currentUser {
+            Task { await refreshState(for: u) }
+        }
     }
 
     deinit {
@@ -40,13 +49,16 @@ class AppViewModel: ObservableObject {
                 if let user = user {
                     print("✅ Auth state changed: signed in as", user.uid)
                     self.userName = user.displayName ?? user.email
-                    self.isAuthenticated = true
+                    self.signedInAccordingToFirebase = true
                 } else {
                     print("ℹ️ Auth state changed: signed out")
-                    self.isAuthenticated = false
+                    self.signedInAccordingToFirebase = false
                     self.isBioAuth = false
                     self.userName = nil
+                    self.verificationPromptSeen = false
                 }
+                
+                Task { await self.refreshState(for: user) }
             }
         }
     }
@@ -54,7 +66,7 @@ class AppViewModel: ObservableObject {
     func initializeAuthState() {
         if let user = Auth.auth().currentUser {
             self.userName = user.displayName ?? user.email
-            self.isAuthenticated = true
+            self.signedInAccordingToFirebase = true
         }
     }
 
@@ -66,10 +78,17 @@ class AppViewModel: ObservableObject {
         do {
             try Auth.auth().signOut()
             biometricEnabled = false
+            verificationPromptSeen = false
         } catch {
             print("❌ Error signing out:", error)
         }
     }
+    
+    private func recomputeAuth() {
+        // User counts as "authenticated" only when BOTH are true
+        isAuthenticated = signedInAccordingToFirebase && verificationPromptSeen
+    }
+
 
     // Email Handling
 
@@ -179,5 +198,74 @@ class AppViewModel: ObservableObject {
         }
         networkMonitor.start(queue: networkQueue)
     }
+    
+    // Verification Email Funcs
+    
+    func sendVerificationEmail() async throws {
+        guard let user = Auth.auth().currentUser else { return }
+        try await user.sendEmailVerification()
+    }
+    
+    func createUserDoc(uid: String, fullName: String, emailVerified: Bool) async throws {
+        try await Firestore.firestore().collection("users")
+            .document(uid)
+            .setData([
+                "fullName": fullName,
+                "emailVerified": emailVerified,
+                "createdAt": FieldValue.serverTimestamp()
+            ])
+    }
+
+    func updateUserDoc(uid: String, verified: Bool) async throws {
+        try await Firestore.firestore().collection("users")
+            .document(uid)
+            .updateData(["emailVerified": verified])
+    }
+    
+    private func refreshState(for user: FirebaseAuth.User?) async {
+        userListener?.remove()
+
+        guard let user else {             // signed out
+            isAuthenticated = false
+            emailVerified   = false
+            return
+        }
+
+        // 1️⃣  Firestore listener keeps the flag in real-time
+        userListener = Firestore.firestore()
+            .collection("users").document(user.uid)
+            .addSnapshotListener { [weak self] snap, _ in
+                let verified = (snap?.data()?["emailVerified"] as? Bool) ?? false
+                self?.emailVerified = verified
+                if verified { self?.verificationPromptSeen = true }
+            }
+
+        // 2️⃣  Make sure Auth and Firestore agree whenever app launches
+        try? await user.reload()
+        if user.isEmailVerified {
+            try? await Firestore.firestore()
+                  .collection("users")
+                  .document(user.uid)
+                  .setData(["emailVerified": true], merge: true)
+            verificationPromptSeen = true
+        }
+    }
+    
+    @MainActor
+    func refreshAuthIfNeeded() async {
+        guard let user = Auth.auth().currentUser else { return }
+        try? await user.reload()
+        userName = user.displayName ?? user.email
+
+        // If the user *just* verified, mirror it to Firestore and the UI
+        if user.isEmailVerified {
+            verificationPromptSeen = true           // unlock router
+            try? await Firestore.firestore()
+                  .collection("users")
+                  .document(user.uid)
+                  .setData(["emailVerified": true], merge: true)
+        }
+    }
+
 }
 

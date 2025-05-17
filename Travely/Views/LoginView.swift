@@ -176,6 +176,7 @@ struct LoginView: View {
                 } else {
                     print("✅ Signed in with email:", authResult?.user.uid ?? "")
                     viewModel.signIn(with: authResult?.user.displayName)
+                    viewModel.verificationPromptSeen = true
                 }
             }
         }

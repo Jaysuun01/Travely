@@ -16,6 +16,7 @@ var blurEffectView: UIVisualEffectView?
 
 struct RootView: View {
     @EnvironmentObject var viewModel: AppViewModel
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         Group {
@@ -40,6 +41,11 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             if viewModel.isAuthenticated && viewModel.biometricEnabled {
                 viewModel.isBioAuth = false
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                Task { await viewModel.refreshAuthIfNeeded() }
             }
         }
     }

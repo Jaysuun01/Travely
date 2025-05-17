@@ -149,6 +149,9 @@ struct ProfileView: View {
                                         .cornerRadius(12)
                                     }
                                     
+                                    VerifyEmailButton(accentColor: accentColor)
+                                        .environmentObject(viewModel)
+                                    
                                     Button(action: {
                                         tempFullName = viewModel.userName ?? ""
                                         showingFullNamePopup = true
@@ -599,6 +602,54 @@ struct ProfileView: View {
         }
     }
 }
+
+struct VerifyEmailButton: View {
+    @EnvironmentObject private var vm: AppViewModel
+    let accentColor: Color
+
+    var body: some View {
+        let verified = vm.emailVerified       // 1️⃣ pull into a local
+
+        Button {
+            Task { try? await vm.sendVerificationEmail() }
+        } label: {
+            label(forVerified: verified)
+        }
+        .disabled(verified)
+        .buttonStyle(PressableStyle())
+    }
+
+    @ViewBuilder
+    private func label(forVerified verified: Bool) -> some View {
+        HStack {
+            Image(systemName: verified ? "checkmark.seal.fill"
+                                        : "envelope.badge.fill")
+                .foregroundColor(accentColor)
+            Text(verified ? "Verified" : "Verify Email")
+                .foregroundColor(.white)
+            Spacer()
+            Image(systemName: verified ? "checkmark"
+                                       : "chevron.right")
+                .foregroundColor(.gray)
+        }
+        .padding()
+        .background(Color.gray
+            .opacity(verified ? 0.1 : 0.2))   // 2️⃣ still a ternary, but short
+        .cornerRadius(12)
+        .opacity(verified ? 0.5 : 1)
+    }
+}
+
+struct PressableStyle: ButtonStyle {
+    var scale: CGFloat = 0.94
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6),
+                       value: configuration.isPressed)
+    }
+}
+
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {

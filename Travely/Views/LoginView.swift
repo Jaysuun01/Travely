@@ -157,12 +157,13 @@ struct LoginView: View {
                     checkBiometricAvailability()
                 }
             }
-            .ignoresSafeArea(.keyboard)
+            .navigationBarHidden(true)
         }
         .sheet(isPresented: $showSignUp) {
             SignUpView()
                 .environmentObject(viewModel)
         }
+        .toolbar(.hidden, for: .navigationBar)
         .ignoresSafeArea(.keyboard)
     }
 
@@ -175,6 +176,7 @@ struct LoginView: View {
                 } else {
                     print("✅ Signed in with email:", authResult?.user.uid ?? "")
                     viewModel.signIn(with: authResult?.user.displayName)
+                    viewModel.verificationPromptSeen = true
                 }
             }
         }

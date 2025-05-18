@@ -185,32 +185,84 @@ struct SignUpView: View {
         }
         .sheet(isPresented: $showVerifySheet) {
             VStack(spacing: 24) {
-                Text("Verify your e-mail").font(.title3).bold()
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 70, height: 70)
+                    Image(systemName: verificationSent ? "envelope.open.fill" : "envelope.badge.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 38, height: 38)
+                        .foregroundColor(accentColor)
+                }
+                .padding(.top, 16)
+                // Title
+                Text("Verify your e-mail")
+                    .font(.title2).bold()
+                    .foregroundColor(.white)
+                    .padding(.top, 4)
 
+                // Message
                 if verificationSent {
-                    Text("Check your inbox for the link to \(email).\n" +
-                         "Tap it, then hit Continue.")
+                    Text("Check your inbox for the link to\n\(email).\nTap it, then hit Continue.")
                         .multilineTextAlignment(.center)
-
-                    Button("Continue") { Task { await refreshAndDismissIfVerified() } }
+                        .foregroundColor(.gray)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else {
-                    Text("Would you like to verify your address now?\n" +
-                         "You can skip and do it later in Settings.")
+                    Text("Would you like to verify your address now?\nYou can skip and do it later in Settings.")
                         .multilineTextAlignment(.center)
-
-                    Button("Send verification e-mail") {
-                        Task {
-                            try? await viewModel.sendVerificationEmail()
-                            verificationSent = true
-                        }
-                    }
+                        .foregroundColor(.gray)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Button("Skip for now") { viewModel.verificationPromptSeen = true; dismiss() }
-                    .foregroundColor(.secondary)
+                // Action Buttons
+                VStack(spacing: 12) {
+                    if verificationSent {
+                        Button {
+                            Task { await refreshAndDismissIfVerified() }
+                        } label: {
+                            Text("Continue")
+                                .fontWeight(.semibold)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(accentColor)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    } else {
+                        Button {
+                            Task {
+                                try? await viewModel.sendVerificationEmail()
+                                verificationSent = true
+                            }
+                        } label: {
+                            Text("Send verification e-mail")
+                                .fontWeight(.semibold)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(accentColor)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                    Button("Skip for now") {
+                        viewModel.verificationPromptSeen = true
+                        dismiss()
+                    }
+                    .foregroundColor(.gray)
+                }
+                .padding(.top, 8)
             }
-            .padding()
-            .presentationDetents([.fraction(0.38)])
+            .padding(.horizontal, 28)
+            .padding(.vertical, 32)
+            .background(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(Color(.systemGray6).opacity(0.98))
+                    .shadow(color: .black.opacity(0.18), radius: 16, x: 0, y: 8)
+            )
+            .padding(.horizontal, 12)
+            .presentationDetents([.medium, .large])
         }
     }
     

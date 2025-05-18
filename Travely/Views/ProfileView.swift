@@ -20,6 +20,8 @@ struct ProfileView: View {
     @State private var showingEmailPopup = false
     @State private var showingEditSheet = false
     
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+    
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     // Password requirements
@@ -108,6 +110,13 @@ struct ProfileView: View {
                                             }
                                         }
                                     ))
+                                        .padding()
+                                        .background(Color.gray.opacity(0.2))
+                                        .cornerRadius(12)
+                                        .foregroundColor(.white)
+                                        .toggleStyle(SwitchToggleStyle(tint: accentColor))
+                                    
+                                    Toggle("Enable Notifications", isOn: $notificationsEnabled)
                                         .padding()
                                         .background(Color.gray.opacity(0.2))
                                         .cornerRadius(12)

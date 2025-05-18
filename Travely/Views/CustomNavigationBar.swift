@@ -6,8 +6,7 @@ struct CustomNavigationBar: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
+            HStack(spacing: 0) {
                 TabButton(
                     imageName: "house.fill",
                     title: "Home",
@@ -16,7 +15,7 @@ struct CustomNavigationBar: View {
                 ) {
                     selectedTab = 0
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
                 TabButton(
                     imageName: "plus.circle.fill",
                     title: "Add",
@@ -25,7 +24,7 @@ struct CustomNavigationBar: View {
                 ) {
                     selectedTab = 1
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
                 TabButton(
                     imageName: "bell.fill",
                     title: "Notifications",
@@ -34,7 +33,7 @@ struct CustomNavigationBar: View {
                 ) {
                     selectedTab = 2
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
                 TabButton(
                     imageName: "person.fill",
                     title: "Profile",
@@ -43,7 +42,7 @@ struct CustomNavigationBar: View {
                 ) {
                     selectedTab = 3
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
             }
             .padding(.vertical, 8)
             .background(.ultraThinMaterial)

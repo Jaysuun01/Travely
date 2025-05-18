@@ -140,7 +140,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Check for existing sign-in
         if let user = Auth.auth().currentUser {
             print("✅ Found existing sign-in for user:", user.uid)
-        }
+        }       
         
         print("✅ Firebase configured, clientID =", FirebaseApp.app()?.options.clientID ?? "nil")
         return true

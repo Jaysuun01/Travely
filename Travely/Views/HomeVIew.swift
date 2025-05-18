@@ -25,6 +25,21 @@ struct HomeView: View {
         }
     }
     
+    var upcomingTrips: [Trip] {
+        let now = Date()
+        return filteredTrips.filter { $0.endDate >= now && $0.ownerId == Auth.auth().currentUser?.uid }
+            .sorted(by: { $0.startDate < $1.startDate })
+    }
+    var pastTrips: [Trip] {
+        let now = Date()
+        return filteredTrips.filter { $0.endDate < now && $0.ownerId == Auth.auth().currentUser?.uid }
+            .sorted(by: { $0.startDate > $1.startDate })
+    }
+    var sharedTrips: [Trip] {
+        return filteredTrips.filter { $0.ownerId != Auth.auth().currentUser?.uid }
+            .sorted(by: { $0.startDate < $1.startDate })
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -38,7 +53,7 @@ struct HomeView: View {
                                 Text("My Trips")
                                     .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(.white)
-                                Text("Plan your next adventure")
+                                Text("Your adventures, organized by time and friends")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
                             }
@@ -74,19 +89,71 @@ struct HomeView: View {
                         .padding(.horizontal)
                         .padding(.top, 16)
                     
-                    // Trip list
                     ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(filteredTrips, id: \.tripId) { trip in
-                                NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
-                                    TripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
+                        VStack(alignment: .leading, spacing: 44) {
+                            // Shared Trips Section
+                            if !sharedTrips.isEmpty {
+                                VStack(alignment: .leading, spacing: 18) {
+                                    SectionHeader(icon: "person.2.fill", title: "Shared Trips", color: .orange)
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 18) {
+                                            ForEach(sharedTrips, id: \ .tripId) { trip in
+                                                NavigationLink(destination: TripDetailView(trip: trip, isShared: true)) {
+                                                    ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: true)
+                                                        .frame(minWidth: 0, maxWidth: .infinity)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                            }
+                                        }
+                                        .frame(minWidth: 0, maxWidth: .infinity)
+                                        .padding(.vertical, 4)
+                                        .padding(.horizontal, 8)
+                                    }
                                 }
-                                .buttonStyle(PlainButtonStyle())
-                                .transition(.opacity)
+                                .padding(.horizontal)
+                            }
+
+                            // Upcoming Trips Section
+                            if !upcomingTrips.isEmpty {
+                                VStack(alignment: .leading, spacing: 18) {
+                                    SectionHeader(icon: "calendar.badge.clock", title: "Upcoming Trips", color: .blue)
+                                    ForEach(upcomingTrips, id: \ .tripId) { trip in
+                                        NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
+                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .transition(.opacity)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+
+                            // Past Trips Section
+                            if !pastTrips.isEmpty {
+                                VStack(alignment: .leading, spacing: 18) {
+                                    SectionHeader(icon: "clock.arrow.circlepath", title: "Past Trips", color: .gray)
+                                    ForEach(pastTrips, id: \ .tripId) { trip in
+                                        NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
+                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .transition(.opacity)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                            if upcomingTrips.isEmpty && pastTrips.isEmpty && sharedTrips.isEmpty {
+                                VStack {
+                                    Text("No trips found. Start planning your next adventure!")
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, 40)
+                                }
+                                .frame(maxWidth: .infinity)
                             }
                         }
                         .padding(.top, 16)
-                        .padding(.bottom, 32)
+                        .padding(.bottom, 120)
                     }
                     .refreshable {
                         isRefreshing = true
@@ -238,109 +305,131 @@ struct HomeView: View {
     }
 }
 
-struct TripCard: View {
+struct SectionHeader: View {
+    let icon: String
+    let title: String
+    let color: Color
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundColor(.white)
+                .font(.system(size: 18, weight: .bold))
+                .padding(6)
+                .background(color)
+                .clipShape(Circle())
+            Text(title)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.white)
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 14)
+        .background(BlurView(style: .systemUltraThinMaterialDark).opacity(0.85))
+        .cornerRadius(12)
+        .shadow(color: color.opacity(0.14), radius: 6, x: 0, y: 3)
+    }
+}
+
+struct BlurView: UIViewRepresentable {
+    var style: UIBlurEffect.Style
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: style))
+    }
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
+}
+
+struct ModernTripCard: View {
     let trip: Trip
     let onDelete: () -> Void
     let isShared: Bool
     let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
-    
     @State private var showDeleteConfirmation = false
-    
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter
     }()
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Top section with icon and dates
-            HStack(alignment: .top, spacing: 16) {
-                // Trip icon with gradient background
-                Image(systemName: "airplane")  // Default to airplane icon
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 32, height: 32)
-                    .padding(12)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [accentColor.opacity(0.7), accentColor.opacity(0.3)]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .cornerRadius(12)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    // Trip name and destination
-                    Text(trip.tripName)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
-                    Text(trip.destination)
-                        .font(.system(size: 15))
-                        .foregroundColor(accentColor)
-                    if isShared {
-                        Label("Shared", systemImage: "person.2.fill")
-                            .font(.caption2)
-                            .foregroundColor(.orange)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.white.opacity(0.08))
-                            .cornerRadius(8)
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 14) {
+                // Solid orange bar
+                accentColor
+                    .frame(height: 6)
+                    .cornerRadius(3)
+                    .padding(.bottom, 2)
+                HStack(alignment: .top, spacing: 14) {
+                    Image(systemName: "airplane")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 36, height: 36)
+                        .padding(10)
+                        .background(accentColor)
+                        .cornerRadius(12)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(trip.tripName)
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.white)
+                        Text(trip.destination)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(accentColor)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(dateFormatter.string(from: trip.startDate))
+                            .font(.system(size: 13))
+                            .foregroundColor(.gray)
+                        Text(dateFormatter.string(from: trip.endDate))
+                            .font(.system(size: 13))
+                            .foregroundColor(.gray)
                     }
                 }
-                
-                Spacer()
-                
-                // Dates
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(dateFormatter.string(from: trip.startDate))
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
-                    Text(dateFormatter.string(from: trip.endDate))
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            // Bottom section with places count and arrow
-            HStack {
-                // Places count
-                HStack(spacing: 6) {
+                HStack(spacing: 8) {
                     Image(systemName: "mappin.circle.fill")
                         .foregroundColor(.orange)
                     Text("\(trip.locations.count) Places")
                         .font(.system(size: 14))
                         .foregroundColor(.gray)
+                    Spacer()
                 }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 14, weight: .medium))
+            }
+            .padding(18)
+            .background(
+                BlurView(style: .systemUltraThinMaterialDark)
+                    .opacity(0.95)
+                    .background(Color.white.opacity(0.03))
+            )
+            .cornerRadius(20)
+            .shadow(color: Color.black.opacity(0.18), radius: 12, x: 0, y: 6)
+            .contextMenu {
+                Button(role: .destructive) {
+                    showDeleteConfirmation = true
+                } label: {
+                    Label("Delete Trip", systemImage: "trash")
+                }
+            }
+            .alert("Delete Trip", isPresented: $showDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    onDelete()
+                }
+            } message: {
+                Text("Are you sure you want to delete this trip? This action cannot be undone.")
+            }
+            // Shared badge
+            if isShared {
+                Text("Shared")
+                    .font(.caption2.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(accentColor)
+                    .cornerRadius(12)
+                    .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
+                    .padding(10)
             }
         }
-        .padding(16)
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
-        .padding(.horizontal)
-        .contextMenu {
-            Button(role: .destructive) {
-                showDeleteConfirmation = true
-            } label: {
-                Label("Delete Trip", systemImage: "trash")
-            }
-        }
-        .alert("Delete Trip", isPresented: $showDeleteConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                onDelete()
-            }
-        } message: {
-            Text("Are you sure you want to delete this trip? This action cannot be undone.")
-        }
+        .padding(.horizontal, 2)
+        .padding(.vertical, 4)
     }
 }
 

@@ -101,6 +101,10 @@ class NotificationManager: NSObject, ObservableObject {
     }
     
     func scheduleTripNotification(for trip: [String: Any]) {
+        if !UserDefaults.standard.bool(forKey: "notificationsEnabled") {
+            print("🔕 Notifications are disabled by user.")
+            return
+        }
         guard let startDate = (trip["startDate"] as? Timestamp)?.dateValue(),
               let tripName = trip["tripName"] as? String,
               let destination = trip["destination"] as? String else {
@@ -144,6 +148,10 @@ class NotificationManager: NSObject, ObservableObject {
     }
     
     func scheduleLocationNotification(for location: [String: Any], tripName: String) {
+        if !UserDefaults.standard.bool(forKey: "notificationsEnabled") {
+            print("🔕 Notifications are disabled by user.")
+            return
+        }
         guard let startDate = (location["startDate"] as? Timestamp)?.dateValue(),
               let locationName = location["name"] as? String,
               let locationId = location["id"] as? String else {
@@ -177,10 +185,10 @@ class NotificationManager: NSObject, ObservableObject {
             trigger = nil // Send immediately
             notificationDate = now
         } else {
-            // More than 30 minutes away, schedule for 30 minutes before
-            let triggerDate = startDate.addingTimeInterval(-30 * 60)
+            // More than 15 minutes away, schedule for 15 minutes before
+            let triggerDate = startDate.addingTimeInterval(-15 * 60)
             title = "Upcoming: \(locationName)"
-            body = "For your \(tripName) trip. (in 30 minutes)"
+            body = "For your \(tripName) trip. (in 15 minutes)"
             let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
             trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
             notificationDate = triggerDate

@@ -120,7 +120,7 @@ struct EditTripView: View {
                                 }
                                 VStack(alignment: .leading, spacing: 12) {
                                     HStack(spacing: 12) {
-                                        Image(systemName: "mappin.and.ellipse")
+                                        Image(systemName: "person.badge.plus.fill")
                                             .resizable()
                                             .frame(width: 28, height: 28)
                                             .foregroundColor(.orange)

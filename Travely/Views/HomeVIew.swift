@@ -324,9 +324,7 @@ struct SectionHeader: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 14)
-        .background(BlurView(style: .systemUltraThinMaterialDark).opacity(0.85))
         .cornerRadius(12)
-        .shadow(color: color.opacity(0.14), radius: 6, x: 0, y: 3)
     }
 }
 

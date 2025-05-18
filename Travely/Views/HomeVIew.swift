@@ -279,6 +279,11 @@ struct HomeView: View {
             DispatchQueue.main.async {
                 self.trips = fetchedTrips.sorted(by: { $0.startDate < $1.startDate })
                 self.isRefreshing = snapshot?.metadata.isFromCache ?? false
+                
+                // Schedule notifications for all trips
+                for trip in fetchedTrips {
+                    NotificationManager.shared.scheduleAllLocationNotifications(for: trip)
+                }
             }
         }
     }

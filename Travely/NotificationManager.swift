@@ -6,12 +6,10 @@ import SwiftUI
 
 class NotificationManager: NSObject, ObservableObject {
     static let shared = NotificationManager()
-    private var timer: Timer?
     
     override init() {
         super.init()
         setupNotifications()
-        startTimeCheck()
     }
     
     func setupNotifications() {
@@ -39,44 +37,6 @@ class NotificationManager: NSObject, ObservableObject {
                 }
             }
         )
-    }
-    
-    private func startTimeCheck() {
-        // Check every minute for current time matches
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
-            self?.checkCurrentTimeMatches()
-        }
-    }
-    
-    private func checkCurrentTimeMatches() {
-        let currentDate = Date()
-        let calendar = Calendar.current
-        let currentComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: currentDate)
-        
-        // Get all pending notifications
-        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-            for request in requests {
-                if let trigger = request.trigger as? UNCalendarNotificationTrigger,
-                   let triggerDate = trigger.nextTriggerDate() {
-                    let triggerComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
-                    
-                    // Check if current time matches trigger time
-                    if currentComponents.year == triggerComponents.year &&
-                       currentComponents.month == triggerComponents.month &&
-                       currentComponents.day == triggerComponents.day &&
-                       currentComponents.hour == triggerComponents.hour &&
-                       currentComponents.minute == triggerComponents.minute {
-                        
-                        // Send immediate notification
-                        self.sendImmediateNotification(
-                            title: request.content.title,
-                            body: request.content.body,
-                            identifier: request.identifier
-                        )
-                    }
-                }
-            }
-        }
     }
     
     private func sendImmediateNotification(title: String, body: String, identifier: String) {
@@ -176,19 +136,19 @@ class NotificationManager: NSObject, ObservableObject {
             // Less than or equal to 30 minutes from now, send immediately
             let minutes = Int(round(interval / 60))
             if minutes <= 1 {
-                title = "Visit \(locationName) Now"
-                body = "get ready for \(locationName) for your trip now!"
+                title = "Visit \(locationName) in \(tripName) Now"
+                body = "Get ready for \(locationName) for your trip '\(tripName)' now!"
             } else {
-                title = "Upcoming: \(locationName)"
-                body = "get ready for \(locationName) for your trip in \(minutes) minutes!"
+                title = "Upcoming: \(locationName) in \(tripName)"
+                body = "Get ready for \(locationName) for your trip '\(tripName)' in \(minutes) minutes!"
             }
             trigger = nil // Send immediately
             notificationDate = now
         } else {
             // More than 15 minutes away, schedule for 15 minutes before
             let triggerDate = startDate.addingTimeInterval(-15 * 60)
-            title = "Upcoming: \(locationName)"
-            body = "For your \(tripName) trip. (in 15 minutes)"
+            title = "Upcoming: \(locationName) in \(tripName)"
+            body = "Get ready for \(locationName) for your trip '\(tripName)' in 15 minutes!"
             let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
             trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
             notificationDate = triggerDate

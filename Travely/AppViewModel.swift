@@ -200,7 +200,7 @@ class AppViewModel: ObservableObject {
         // Add Firestore deletion logic if applicable
     }
 
-    func deleteAccount() {
+    func deleteAccount(onReauthRequired: (() -> Void)? = nil) {
         guard let user = Auth.auth().currentUser else {
             print("⚠️ No user signed in.")
             return
@@ -210,6 +210,7 @@ class AppViewModel: ObservableObject {
             if let error = error as NSError? {
                 if error.code == AuthErrorCode.requiresRecentLogin.rawValue {
                     print("⚠️ Re-authentication required to delete account.")
+                    onReauthRequired?()
                     // Implement re-authentication flow here
                 } else {
                     print("❌ Failed to delete account:", error.localizedDescription)
@@ -373,6 +374,21 @@ class AppViewModel: ObservableObject {
         ]) { error in
             if let error = error {
                 print("❌ Error updating notification read status:", error)
+            }
+        }
+    }
+
+    func deleteNotification(at offsets: IndexSet) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        let notificationsToDelete = offsets.map { notifications[$0] }
+        // Remove from local array
+        notifications.remove(atOffsets: offsets)
+        // Remove from Firestore
+        for notification in notificationsToDelete {
+            db.collection("users").document(userId).collection("notifications").document(notification.id).delete { error in
+                if let error = error {
+                    print("❌ Error deleting notification from Firestore:", error)
+                }
             }
         }
     }

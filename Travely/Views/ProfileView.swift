@@ -19,6 +19,8 @@ struct ProfileView: View {
     @State private var showingPasswordMismatchAlert = false
     @State private var showingEmailPopup = false
     @State private var showingEditSheet = false
+    @State private var showVerificationSentAlert = false
+    @State private var showReauthRequiredAlert = false
     
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     
@@ -158,8 +160,12 @@ struct ProfileView: View {
                                         .cornerRadius(12)
                                     }
                                     
-                                    VerifyEmailButton(accentColor: accentColor)
+                                    if !(viewModel.emailVerified) {
+                                        VerifyEmailButton(accentColor: accentColor, onVerificationSent: {
+                                            showVerificationSentAlert = true
+                                        })
                                         .environmentObject(viewModel)
+                                    }
                                     
                                     Button(action: {
                                         tempFullName = viewModel.userName ?? ""
@@ -540,11 +546,23 @@ struct ProfileView: View {
         }
         .alert("Delete Account", isPresented: $showingDeleteAccountAlert) {
             Button("Delete", role: .destructive) {
-                viewModel.deleteAccount()
+                viewModel.deleteAccount(onReauthRequired: {
+                    showReauthRequiredAlert = true
+                })
             }
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Permanently delete your account? This action cannot be undone.")
+        }
+        .alert("Verification Email Sent", isPresented: $showVerificationSentAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("A verification email has been sent to your address. Please check your inbox.")
+        }
+        .alert("Re-authentication Required", isPresented: $showReauthRequiredAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Please log out and log back in, then try deleting your account again.")
         }
     }
     
@@ -615,12 +633,16 @@ struct ProfileView: View {
 struct VerifyEmailButton: View {
     @EnvironmentObject private var vm: AppViewModel
     let accentColor: Color
+    let onVerificationSent: () -> Void
 
     var body: some View {
-        let verified = vm.emailVerified       // 1️⃣ pull into a local
+        let verified = vm.emailVerified
 
         Button {
-            Task { try? await vm.sendVerificationEmail() }
+            Task {
+                try? await vm.sendVerificationEmail()
+                onVerificationSent() // Show alert immediately after sending
+            }
         } label: {
             label(forVerified: verified)
         }

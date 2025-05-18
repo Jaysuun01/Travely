@@ -306,6 +306,8 @@ struct EditTripView: View {
                 trip.collaborators = combined
                 trip.notes = notes
                 onSave?(trip)
+                // Reschedule notifications for all locations
+                NotificationManager.shared.scheduleAllLocationNotifications(for: trip)
                 presentationMode.wrappedValue.dismiss()
             }
         }

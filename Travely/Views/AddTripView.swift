@@ -269,6 +269,21 @@ struct AddTripView: View {
                 print("Firestore error: \(error)")
             } else {
                 print("Trip saved successfully with ID: \(tripId)")
+                // Create a Trip object and schedule notifications
+                let newTrip = Trip(
+                    id: tripId,
+                    tripName: tripName,
+                    destination: destination,
+                    notes: notes,
+                    startDate: startDate,
+                    endDate: endDate,
+                    ownerId: userId,
+                    collaborators: collaborators,
+                    tripId: tripId,
+                    locations: [],
+                    createdAt: Date()
+                )
+                NotificationManager.shared.scheduleAllLocationNotifications(for: newTrip)
                 selectedTab = 0 // Switch to Home tab
                 // Optionally navigate back or reset fields
             }

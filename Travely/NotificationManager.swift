@@ -3,9 +3,11 @@ import UserNotifications
 import UIKit
 import FirebaseFirestore
 import SwiftUI
+import FirebaseAuth
 
 class NotificationManager: NSObject, ObservableObject {
     static let shared = NotificationManager()
+    private let db = Firestore.firestore()
     
     override init() {
         super.init()
@@ -118,43 +120,27 @@ class NotificationManager: NSObject, ObservableObject {
             print("❌ Missing required location data for notification")
             return
         }
-        
-        let identifier = "location-\(locationId)-start"
-        print("\n--- Scheduling notification for location: \(locationName) ---")
-        let now = Date()
-        let interval = startDate.timeIntervalSince(now)
-        print("Now: \(now), StartDate: \(startDate), Interval (seconds): \(interval)")
-        var trigger: UNNotificationTrigger?
-        var title: String
-        var body: String
-        var notificationDate: Date
-        if interval <= 0 {
-            // Already in the past, do not schedule
-            print("⏰ Location start time is in the past, not scheduling notification.")
+        let reminderOffset = location["reminderOffset"] as? TimeInterval
+        if reminderOffset == nil {
+            print("ℹ️ No reminder set for this location, skipping notification.")
             return
-        } else if interval <= 30 * 60 {
-            // Less than or equal to 30 minutes from now, send immediately
-            let minutes = Int(round(interval / 60))
-            if minutes <= 1 {
-                title = "Visit \(locationName) in \(tripName) Now"
-                body = "Get ready for \(locationName) for your trip '\(tripName)' now!"
-            } else {
-                title = "Upcoming: \(locationName) in \(tripName)"
-                body = "Get ready for \(locationName) for your trip '\(tripName)' in \(minutes) minutes!"
-            }
-            trigger = nil // Send immediately
-            notificationDate = now
-        } else {
-            // More than 15 minutes away, schedule for 15 minutes before
-            let triggerDate = startDate.addingTimeInterval(-15 * 60)
-            title = "Upcoming: \(locationName) in \(tripName)"
-            body = "Get ready for \(locationName) for your trip '\(tripName)' in 15 minutes!"
-            let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
-            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            notificationDate = triggerDate
         }
-        // Remove any existing notification for this location
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+        let identifier = "location-\(locationId)-start"
+        let fireDate = startDate.addingTimeInterval(-reminderOffset!)
+        if fireDate < Date() {
+            print("⏰ Reminder time is in the past, not scheduling notification.")
+            return
+        }
+        let title = "Reminder: \(locationName) in \(tripName)"
+        let body: String
+        if reminderOffset == 0 {
+            body = "It's time for \(locationName) in your trip '\(tripName)'!"
+        } else {
+            let minutes = Int(reminderOffset! / 60)
+            body = "Get ready for \(locationName) in your trip '\(tripName)' in \(minutes) minutes!"
+        }
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -172,10 +158,22 @@ class NotificationManager: NSObject, ObservableObject {
             if let error = error {
                 print("❌ Error scheduling notification: \(error)")
             } else {
-                if trigger == nil {
-                    print("✅ Immediate notification sent for location: \(locationName) with identifier: \(identifier)")
-                } else {
-                    print("✅ Notification scheduled for location: \(locationName) with identifier: \(identifier)")
+                print("✅ Notification scheduled for location: \(locationName) with identifier: \(identifier)")
+                // Add to Firestore for notification view
+                if let userId = Auth.auth().currentUser?.uid {
+                    let notification = AppNotification(
+                        id: UUID().uuidString,
+                        title: title,
+                        message: body,
+                        date: fireDate,
+                        isRead: false
+                    )
+                    do {
+                        let notificationData = try Firestore.Encoder().encode(notification)
+                        self.db.collection("users").document(userId).collection("notifications").document(notification.id).setData(notificationData)
+                    } catch {
+                        print("❌ Error saving notification to Firebase:", error)
+                    }
                 }
             }
         }

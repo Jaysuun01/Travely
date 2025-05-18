@@ -13,6 +13,7 @@ struct Location: Identifiable, Codable, Equatable {
     var notes: String?
     var createdAt: Date?
     var tripId: String
+    var reminderOffset: TimeInterval? // seconds before startDate, nil = no reminder
     
     // Computed property for display date range
     var displayDateRange: String {
@@ -31,6 +32,7 @@ struct Location: Identifiable, Codable, Equatable {
         case notes
         case createdAt
         case tripId
+        case reminderOffset
     }
 }
 

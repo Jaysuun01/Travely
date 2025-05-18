@@ -57,6 +57,7 @@ struct MapPlacePickerView: View {
     @State private var endTime = Date()
     @State private var transportation: TransportationType = .car
     @State private var notes = ""
+    @State private var reminderSelection: ReminderOption = .fifteenMinutesBefore
     
     private let minHeight: CGFloat = 350
     private let maxHeight: CGFloat = UIScreen.main.bounds.height * 0.8
@@ -64,6 +65,10 @@ struct MapPlacePickerView: View {
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
     private var headerHeight: CGFloat { 60 } // Height of the header section
+    
+    private let reminderOptions: [ReminderOption] = [
+        .none, .atTime, .fiveMinutesBefore, .tenMinutesBefore, .fifteenMinutesBefore, .thirtyMinutesBefore, .oneHourBefore
+    ]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -353,23 +358,51 @@ struct MapPlacePickerView: View {
                                             }
                                             .padding(.vertical, 4)
                                             
-                                            // Transportation picker
+                                            // Transportation and Reminder pickers
                                             HStack(spacing: 12) {
-                                                Picker("Transportation", selection: $transportation) {
-                                                    ForEach(TransportationType.allCases) { type in
-                                                        HStack {
-                                                            Image(systemName: type.iconName)
-                                                                .foregroundColor(type.iconColor)
-                                                            Text(type.displayName)
-                                                        }
-                                                        .tag(type)
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: "car")
+                                                            .foregroundColor(.blue)
+                                                        Text("Transportation")
+                                                            .font(.caption)
+                                                            .foregroundColor(.gray)
                                                     }
+                                                    Picker("Transportation", selection: $transportation) {
+                                                        ForEach(TransportationType.allCases) { type in
+                                                            HStack {
+                                                                Image(systemName: type.iconName)
+                                                                    .foregroundColor(type.iconColor)
+                                                                Text(type.displayName)
+                                                            }
+                                                            .tag(type)
+                                                        }
+                                                    }
+                                                    .pickerStyle(.menu)
+                                                    .padding(12)
+                                                    .background(Color.white.opacity(0.08))
+                                                    .cornerRadius(10)
+                                                    .foregroundColor(.white)
                                                 }
-                                                .pickerStyle(.menu)
-                                                .padding(12)
-                                                .background(Color.white.opacity(0.08))
-                                                .cornerRadius(10)
-                                                .foregroundColor(.white)
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: "bell")
+                                                            .foregroundColor(.orange)
+                                                        Text("Reminder")
+                                                            .font(.caption)
+                                                            .foregroundColor(.gray)
+                                                    }
+                                                    Picker("Reminder", selection: $reminderSelection) {
+                                                        ForEach(reminderOptions, id: \ .self) { option in
+                                                            Text(option.displayText).tag(option)
+                                                        }
+                                                    }
+                                                    .pickerStyle(.menu)
+                                                    .padding(12)
+                                                    .background(Color.white.opacity(0.08))
+                                                    .cornerRadius(10)
+                                                    .foregroundColor(.white)
+                                                }
                                             }
                                             
                                             // Notes
@@ -610,10 +643,13 @@ struct MapPlacePickerView: View {
             ),
             notes: notes,
             createdAt: Date(),
-            tripId: selectedLocations.first?.tripId ?? ""
+            tripId: selectedLocations.first?.tripId ?? "",
+            reminderOffset: reminderSelection.offset
         )
         
         selectedLocations.append(location)
+        // Schedule notification for this location
+        NotificationManager.shared.scheduleLocationNotification(for: location.asDictionary, tripName: defaultLocationName)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             presentationMode.wrappedValue.dismiss()
         }
@@ -630,5 +666,23 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
+    }
+}
+
+// Add this extension to convert Location to [String: Any]
+extension Location {
+    var asDictionary: [String: Any] {
+        [
+            "id": id,
+            "name": name,
+            "startDate": Timestamp(date: startDate),
+            "endDate": Timestamp(date: endDate),
+            "transportation": transportation.rawValue,
+            "coordinates": coordinates,
+            "notes": notes as Any,
+            "createdAt": createdAt as Any,
+            "tripId": tripId,
+            "reminderOffset": reminderOffset as Any
+        ]
     }
 }

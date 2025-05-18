@@ -35,6 +35,7 @@ class AppViewModel: ObservableObject {
         if let u = Auth.auth().currentUser {
             Task { await refreshState(for: u) }
         }
+        loadNotifications() // Load notifications when view model is initialized
         NotificationCenter.default.addObserver(forName: .locationNotificationDelivered, object: nil, queue: .main) { [weak self] notif in
             guard let userInfo = notif.userInfo,
                   let title = userInfo["title"] as? String,
@@ -346,7 +347,7 @@ class AppViewModel: ObservableObject {
         
         db.collection("users").document(userId).collection("notifications")
             .order(by: "date", descending: true)
-            .addSnapshotListener { snapshot, error in
+            .addSnapshotListener { [weak self] snapshot, error in
                 if let error = error {
                     print("❌ Error loading notifications:", error)
                     return
@@ -354,7 +355,7 @@ class AppViewModel: ObservableObject {
                 
                 guard let documents = snapshot?.documents else { return }
                 
-                self.notifications = documents.compactMap { document -> AppNotification? in
+                self?.notifications = documents.compactMap { document -> AppNotification? in
                     try? document.data(as: AppNotification.self)
                 }
             }
@@ -363,34 +364,28 @@ class AppViewModel: ObservableObject {
     func updateNotificationReadStatus(_ notification: AppNotification) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
-        // Update local array
+        // Update local state
         if let index = notifications.firstIndex(where: { $0.id == notification.id }) {
             notifications[index].isRead = true
         }
         
-        // Update in Firebase
+        // Update Firestore
         db.collection("users").document(userId).collection("notifications").document(notification.id).updateData([
             "isRead": true
-        ]) { error in
-            if let error = error {
-                print("❌ Error updating notification read status:", error)
-            }
-        }
+        ])
     }
 
-    func deleteNotification(at offsets: IndexSet) {
+    func deleteNotification(at indexSet: IndexSet) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-        let notificationsToDelete = offsets.map { notifications[$0] }
-        // Remove from local array
-        notifications.remove(atOffsets: offsets)
-        // Remove from Firestore
-        for notification in notificationsToDelete {
-            db.collection("users").document(userId).collection("notifications").document(notification.id).delete { error in
-                if let error = error {
-                    print("❌ Error deleting notification from Firestore:", error)
-                }
-            }
+        
+        for index in indexSet {
+            let notification = notifications[index]
+            // Delete from Firestore
+            db.collection("users").document(userId).collection("notifications").document(notification.id).delete()
         }
+        
+        // Update local state
+        notifications.remove(atOffsets: indexSet)
     }
 
 }

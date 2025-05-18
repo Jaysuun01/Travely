@@ -7,6 +7,7 @@ struct EditLocationView: View {
     @Environment(\.presentationMode) var presentationMode
     let location: Location
     let tripId: String
+    let tripName: String
     var onSave: (Location) -> Void
     var onDelete: (Location) -> Void
     
@@ -17,12 +18,18 @@ struct EditLocationView: View {
     @State private var transportation: TransportationType
     @State private var notes: String
     @State private var showDeleteConfirmation = false
+    @State private var reminderSelection: ReminderOption = .fifteenMinutesBefore
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     
-    init(location: Location, tripId: String, onSave: @escaping (Location) -> Void, onDelete: @escaping (Location) -> Void) {
+    private let reminderOptions: [ReminderOption] = [
+        .none, .atTime, .fiveMinutesBefore, .tenMinutesBefore, .fifteenMinutesBefore, .thirtyMinutesBefore, .oneHourBefore
+    ]
+    
+    init(location: Location, tripId: String, tripName: String, onSave: @escaping (Location) -> Void, onDelete: @escaping (Location) -> Void) {
         self.location = location
         self.tripId = tripId
+        self.tripName = tripName
         self.onSave = onSave
         self.onDelete = onDelete
         
@@ -33,6 +40,7 @@ struct EditLocationView: View {
         _endTime = State(initialValue: location.endDate)
         _transportation = State(initialValue: location.transportation)
         _notes = State(initialValue: location.notes ?? "")
+        _reminderSelection = State(initialValue: Self.reminderOption(for: location.reminderOffset))
     }
     
     var body: some View {
@@ -139,6 +147,24 @@ struct EditLocationView: View {
                                     .cornerRadius(10)
                                     .foregroundColor(.white)
                             }
+                            
+                            // Reminder Picker
+                            HStack(spacing: 12) {
+                                Image(systemName: "bell")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(.orange)
+                                Picker("Reminder", selection: $reminderSelection) {
+                                    ForEach(reminderOptions, id: \ .self) { option in
+                                        Text(option.displayText).tag(option)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .padding(12)
+                                .background(Color.white.opacity(0.08))
+                                .cornerRadius(10)
+                                .foregroundColor(.white)
+                            }
                         }
                         .padding(20)
                         .background(Color.white.opacity(0.07))
@@ -230,11 +256,16 @@ struct EditLocationView: View {
             coordinates: location.coordinates,
             notes: notes,
             createdAt: location.createdAt,
-            tripId: tripId
+            tripId: tripId,
+            reminderOffset: reminderSelection.offset
         )
         
         onSave(updatedLocation)
-        // Optionally schedule notification here if you have access to the trip
+        NotificationManager.shared.scheduleLocationNotification(for: updatedLocation.asDictionary, tripName: tripName)
         presentationMode.wrappedValue.dismiss()
+    }
+    
+    private static func reminderOption(for offset: TimeInterval?) -> ReminderOption {
+        ReminderOption.allCases.first(where: { $0.offset == offset }) ?? .none
     }
 } 

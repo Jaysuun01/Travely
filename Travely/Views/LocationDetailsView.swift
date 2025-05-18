@@ -16,8 +16,13 @@ struct LocationDetailsView: View {
     @State private var endTime = Date()
     @State private var transportation: TransportationType = .car
     @State private var notes = ""
+    @State private var reminderSelection: ReminderOption = .fifteenMinutesBefore
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
+    
+    private let reminderOptions: [ReminderOption] = [
+        .none, .atTime, .fiveMinutesBefore, .tenMinutesBefore, .fifteenMinutesBefore, .thirtyMinutesBefore, .oneHourBefore
+    ]
     
     init(mapItem: MKMapItem, tripId: String, onSave: @escaping (Location) -> Void) {
         self.mapItem = mapItem
@@ -152,6 +157,54 @@ struct LocationDetailsView: View {
                         .cornerRadius(18)
                         .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 6)
                         
+                        // Reminder Picker
+                        HStack(spacing: 12) {
+                            Image(systemName: "bell")
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(.orange)
+                            Picker("Reminder", selection: $reminderSelection) {
+                                ForEach(reminderOptions, id: \ .self) { option in
+                                    Text(option.displayText).tag(option)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .padding(12)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(10)
+                            .foregroundColor(.white)
+                        }
+                        
+                        // Reminder Card (show selected)
+                        HStack(spacing: 20) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.orange.opacity(0.15))
+                                    .frame(width: 60, height: 60)
+                                Image(systemName: "bell")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.orange)
+                            }
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Reminder")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.gray)
+                                Text(reminderSelection.displayText)
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            Spacer()
+                        }
+                        .padding(24)
+                        .background(
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(Color.white.opacity(0.05))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 24)
+                                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                )
+                        )
+                        
                         Button(action: saveLocation) {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
@@ -214,7 +267,8 @@ struct LocationDetailsView: View {
             ),
             notes: notes,
             createdAt: Date(),
-            tripId: tripId
+            tripId: tripId,
+            reminderOffset: reminderSelection.offset
         )
         
         onSave(location)

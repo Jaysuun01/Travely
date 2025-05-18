@@ -27,12 +27,21 @@ struct CustomNavigationBar: View {
                 }
                 Spacer()
                 TabButton(
-                    imageName: "person.fill",
-                    title: "Profile",
+                    imageName: "bell.fill",
+                    title: "Notifications",
                     isSelected: selectedTab == 2,
                     accentColor: accentColor
                 ) {
                     selectedTab = 2
+                }
+                Spacer()
+                TabButton(
+                    imageName: "person.fill",
+                    title: "Profile",
+                    isSelected: selectedTab == 3,
+                    accentColor: accentColor
+                ) {
+                    selectedTab = 3
                 }
                 Spacer()
             }

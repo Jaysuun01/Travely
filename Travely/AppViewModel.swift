@@ -21,6 +21,8 @@ class AppViewModel: ObservableObject {
     @Published var isConnected = true // Network connectivity status
     @Published var emailVerified = false
     private var userListener: ListenerRegistration?
+    @Published var notifications: [AppNotification] = []
+    private let db = Firestore.firestore()
 
     @AppStorage("biometricEnabled") var biometricEnabled: Bool = false
     private var authStateListener: AuthStateDidChangeListenerHandle?
@@ -32,6 +34,36 @@ class AppViewModel: ObservableObject {
         startNetworkMonitoring()
         if let u = Auth.auth().currentUser {
             Task { await refreshState(for: u) }
+        }
+        NotificationCenter.default.addObserver(forName: .locationNotificationDelivered, object: nil, queue: .main) { [weak self] notif in
+            guard let userInfo = notif.userInfo,
+                  let title = userInfo["title"] as? String,
+                  let body = userInfo["body"] as? String,
+                  let date = userInfo["date"] as? Date else { return }
+            let message = body
+            let notification = AppNotification(
+                id: UUID().uuidString,
+                title: title,
+                message: message,
+                date: date,
+                isRead: false
+            )
+            self?.addNotification(notification)
+        }
+        NotificationCenter.default.addObserver(forName: .locationNotificationScheduled, object: nil, queue: .main) { [weak self] notif in
+            guard let userInfo = notif.userInfo,
+                  let title = userInfo["title"] as? String,
+                  let body = userInfo["body"] as? String,
+                  let date = userInfo["date"] as? Date else { return }
+            let message = body
+            let notification = AppNotification(
+                id: UUID().uuidString,
+                title: title,
+                message: message,
+                date: date,
+                isRead: false
+            )
+            self?.addNotification(notification)
         }
     }
 
@@ -264,6 +296,84 @@ class AppViewModel: ObservableObject {
                   .collection("users")
                   .document(user.uid)
                   .setData(["emailVerified": true], merge: true)
+        }
+    }
+
+    private func addNotification(_ notification: AppNotification) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        // Add to local array
+        notifications.append(notification)
+        notifications.sort { $0.date > $1.date }
+        
+        // Add to Firebase
+        do {
+            let notificationData = try Firestore.Encoder().encode(notification)
+            db.collection("users").document(userId).collection("notifications").document(notification.id).setData(notificationData)
+        } catch {
+            print("❌ Error saving notification to Firebase:", error)
+        }
+    }
+
+    func clearNotifications() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        // Clear local array
+        notifications.removeAll()
+        
+        // Clear from Firebase
+        db.collection("users").document(userId).collection("notifications").getDocuments { snapshot, error in
+            if let error = error {
+                print("❌ Error getting notifications:", error)
+                return
+            }
+            
+            guard let documents = snapshot?.documents else { return }
+            
+            for document in documents {
+                document.reference.delete { error in
+                    if let error = error {
+                        print("❌ Error deleting notification:", error)
+                    }
+                }
+            }
+        }
+    }
+
+    func loadNotifications() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users").document(userId).collection("notifications")
+            .order(by: "date", descending: true)
+            .addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("❌ Error loading notifications:", error)
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else { return }
+                
+                self.notifications = documents.compactMap { document -> AppNotification? in
+                    try? document.data(as: AppNotification.self)
+                }
+            }
+    }
+
+    func updateNotificationReadStatus(_ notification: AppNotification) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        // Update local array
+        if let index = notifications.firstIndex(where: { $0.id == notification.id }) {
+            notifications[index].isRead = true
+        }
+        
+        // Update in Firebase
+        db.collection("users").document(userId).collection("notifications").document(notification.id).updateData([
+            "isRead": true
+        ]) { error in
+            if let error = error {
+                print("❌ Error updating notification read status:", error)
+            }
         }
     }
 

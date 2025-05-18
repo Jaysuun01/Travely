@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
+import UserNotifications
 
 struct HomeView: View {
     @State private var searchText = ""
@@ -355,6 +356,11 @@ struct TripDetailView: View {
 
     func addLocationToTrip(_ location: Location) {
         guard !trip.tripId.isEmpty else { return }
+        // Check that startDate is not after endDate
+        if location.startDate > location.endDate {
+            print("❌ Location start time cannot be after end time.")
+            return
+        }
         let tripRef = db.collection("trips").document(trip.tripId)
         do {
             let locationWithId = Location(
@@ -368,10 +374,8 @@ struct TripDetailView: View {
                 createdAt: location.createdAt,
                 tripId: trip.tripId
             )
-            
             // Update local state immediately
             trip.locations.append(locationWithId)
-            
             let locationData = try Firestore.Encoder().encode(locationWithId)
             tripRef.updateData([
                 "locations": FieldValue.arrayUnion([locationData])
@@ -380,6 +384,8 @@ struct TripDetailView: View {
                     print("Error updating locations: \(error.localizedDescription)")
                 }
             }
+            // Schedule notification only for the newly added location
+            NotificationManager.shared.scheduleLocationNotification(for: locationData, tripName: trip.tripName)
         } catch {
             print("Encoding error: \(error)")
         }
@@ -426,6 +432,8 @@ struct TripDetailView: View {
                 } else {
                     // Update local state
                     trip.locations = updatedLocations
+                    // Remove scheduled notification for this location
+                    NotificationManager.shared.removeLocationNotification(locationId: location.id)
                 }
             }
         } catch {

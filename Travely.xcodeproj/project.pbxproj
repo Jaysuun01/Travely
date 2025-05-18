@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02A0650B2DD9356900639D8D /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02A0650A2DD9356900639D8D /* UserNotifications.framework */; };
 		D4608C7D2DCCAA2D00B52FB4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D4608C7C2DCCAA2D00B52FB4 /* FirebaseFirestore */; };
 		D4B7F4902DA096120061E9F7 /* Travely.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */; };
 		D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D4C3DC682DB093F800A3E3BB /* GoogleSignIn */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		02A0650A2DD9356900639D8D /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		D4A4E72E2D94FFCE00882A19 /* Travely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Travely.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4B7F47C2DA08EBE0061E9F7 /* Travely.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Travely.xcdatamodel; sourceTree = "<group>"; };
 		D4B7F48F2DA096120061E9F7 /* Travely.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Travely.xcdatamodel; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02A0650B2DD9356900639D8D /* UserNotifications.framework in Frameworks */,
 				D4C3DC782DB094FC00A3E3BB /* FirebaseMessaging in Frameworks */,
 				D4C3DC692DB093F800A3E3BB /* GoogleSignIn in Frameworks */,
 				D4C3DC722DB094FC00A3E3BB /* FirebaseCore in Frameworks */,
@@ -66,12 +69,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		02A065092DD9356900639D8D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				02A0650A2DD9356900639D8D /* UserNotifications.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D4A4E7252D94FFCE00882A19 = {
 			isa = PBXGroup;
 			children = (
 				D4B7F48E2DA096120061E9F7 /* Travely.xcdatamodeld */,
 				D4B7F47A2DA08EBC0061E9F7 /* Travely.xcdatamodeld */,
 				D4A4E7302D94FFCE00882A19 /* Travely */,
+				02A065092DD9356900639D8D /* Frameworks */,
 				D4A4E72F2D94FFCE00882A19 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -306,7 +318,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = BRG6693JF6;
+				DEVELOPMENT_TEAM = 3449PUSCGX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -323,7 +335,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -340,7 +352,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Travely/Preview Content\"";
-				DEVELOPMENT_TEAM = BRG6693JF6;
+				DEVELOPMENT_TEAM = 3449PUSCGX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Travely/Info.plist;
@@ -357,7 +369,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.ather;
+				PRODUCT_BUNDLE_IDENTIFIER = com.travely.travely.phuc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

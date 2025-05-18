@@ -15,8 +15,11 @@ struct MainTabView: View {
                 AddTripView(selectedTab: $selectedTab)
                     .tag(1)
                 
-                ProfileView()
+                NotificationsView()
                     .tag(2)
+                
+                ProfileView()
+                    .tag(3)
             }
             
             VStack {

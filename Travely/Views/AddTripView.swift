@@ -16,6 +16,7 @@ struct AddTripView: View {
     
     @State private var isSaving = false
     @State private var errorMessage = ""
+    @State private var attemptedSave = false
     
     private let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     private let db = Firestore.firestore()
@@ -162,7 +163,15 @@ struct AddTripView: View {
                         }
                         .padding(.horizontal, 16)
                         
-                        if !errorMessage.isEmpty {
+                        let showFieldError = (tripName.trimmingCharacters(in: .whitespaces).isEmpty || destination.trimmingCharacters(in: .whitespaces).isEmpty) && attemptedSave
+
+                        if showFieldError {
+                            Text("Trip name and destination are required.")
+                                .foregroundColor(.red)
+                                .padding(.top, 8)
+                        }
+
+                        if !errorMessage.isEmpty && !showFieldError {
                             Text(errorMessage)
                                 .foregroundColor(.red)
                                 .padding(.top, 8)
@@ -219,12 +228,18 @@ struct AddTripView: View {
         notes = ""
         errorMessage = ""
         isSaving = false
+        attemptedSave = false
     }
     
     func saveTrip() {
+        attemptedSave = true
         addEmail()
         guard let userId = Auth.auth().currentUser?.uid else {
             errorMessage = "Not signed in."
+            return
+        }
+        if tripName.trimmingCharacters(in: .whitespaces).isEmpty || destination.trimmingCharacters(in: .whitespaces).isEmpty {
+            errorMessage = ""
             return
         }
         

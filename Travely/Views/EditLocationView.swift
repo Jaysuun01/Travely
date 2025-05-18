@@ -234,6 +234,7 @@ struct EditLocationView: View {
         )
         
         onSave(updatedLocation)
+        // Optionally schedule notification here if you have access to the trip
         presentationMode.wrappedValue.dismiss()
     }
 } 

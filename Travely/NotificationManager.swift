@@ -204,8 +204,75 @@ class NotificationManager: NSObject, ObservableObject {
         let identifier = "location-\(locationId)-start"
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
     }
-
-   
+    
+    func notifyCollaboratorAdded(tripName: String, tripId: String, collaboratorEmail: String) {
+        if !UserDefaults.standard.bool(forKey: "notificationsEnabled") {
+            print("🔕 Notifications are disabled by user.")
+            return
+        }
+        
+        // Look up the collaborator's user ID from their email
+        db.collection("users")
+            .whereField("email", isEqualTo: collaboratorEmail)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ Error looking up collaborator: \(error)")
+                    return
+                }
+                
+                guard let document = snapshot?.documents.first else {
+                    print("❌ Collaborator not found: \(collaboratorEmail)")
+                    return
+                }
+                let userId = document.documentID
+                
+                // Create notification content
+                let title = "New Trip Invitation"
+                let body = "You've been added as a collaborator to the trip '\(tripName)'"
+                let identifier = "trip-\(tripId)-collaborator-\(collaboratorEmail)"
+                
+                // Create a trigger for 1 minute from now
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
+                
+                // Create notification request
+                let content = UNMutableNotificationContent()
+                content.title = title
+                content.body = body
+                content.sound = .default
+                
+                let request = UNNotificationRequest(
+                    identifier: identifier,
+                    content: content,
+                    trigger: trigger
+                )
+                
+                // Schedule the delayed notification
+                UNUserNotificationCenter.current().add(request) { error in
+                    if let error = error {
+                        print("❌ Error scheduling delayed notification: \(error)")
+                    } else {
+                        print("✅ Delayed notification scheduled for collaborator: \(collaboratorEmail)")
+                    }
+                }
+                
+                // Add to Firestore for notification view (with delayed timestamp)
+                let notification = AppNotification(
+                    id: UUID().uuidString,
+                    title: title,
+                    message: body,
+                    date: Date().addingTimeInterval(60), // Add 1 minute to the timestamp
+                    isRead: false
+                )
+                
+                do {
+                    let notificationData = try Firestore.Encoder().encode(notification)
+                    self.db.collection("users").document(userId).collection("notifications").document(notification.id).setData(notificationData)
+                    print("✅ Notification saved for collaborator: \(collaboratorEmail)")
+                } catch {
+                    print("❌ Error saving notification to Firebase:", error)
+                }
+            }
+    }
 }
 
 extension Notification.Name {

@@ -284,6 +284,16 @@ struct AddTripView: View {
                     createdAt: Date()
                 )
                 NotificationManager.shared.scheduleAllLocationNotifications(for: newTrip)
+                
+                // Send notifications to collaborators
+                for collaboratorEmail in collaborators {
+                    NotificationManager.shared.notifyCollaboratorAdded(
+                        tripName: tripName,
+                        tripId: tripId,
+                        collaboratorEmail: collaboratorEmail
+                    )
+                }
+                
                 selectedTab = 0 // Switch to Home tab
                 // Optionally navigate back or reset fields
             }

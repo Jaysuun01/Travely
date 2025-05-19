@@ -308,6 +308,17 @@ struct EditTripView: View {
                 onSave?(trip)
                 // Reschedule notifications for all locations
                 NotificationManager.shared.scheduleAllLocationNotifications(for: trip)
+                
+                // Send notifications to new collaborators
+                let newCollaborators = combined.filter { !existingCollaborators.contains($0) }
+                for collaboratorEmail in newCollaborators {
+                    NotificationManager.shared.notifyCollaboratorAdded(
+                        tripName: tripName,
+                        tripId: trip.tripId,
+                        collaboratorEmail: collaboratorEmail
+                    )
+                }
+                
                 presentationMode.wrappedValue.dismiss()
             }
         }

@@ -175,6 +175,7 @@ struct LoginView: View {
                     print("❌ Email sign-in failed:", error.localizedDescription)
                 } else {
                     print("✅ Signed in with email:", authResult?.user.uid ?? "")
+                    viewModel.ensureUserDocument()
                     viewModel.signIn(with: authResult?.user.displayName)
                     viewModel.verificationPromptSeen = true
                 }
@@ -254,6 +255,7 @@ struct LoginView: View {
                     return
                 }
                 print("✅ Firebase sign‑in OK for", authResult?.user.uid ?? "")
+                viewModel.ensureUserDocument()
                 viewModel.signIn(with: authResult?.user.displayName)
             }
         }

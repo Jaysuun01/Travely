@@ -273,6 +273,8 @@ struct AirportSearchView: View {
     @Binding var searchText: String
     @Binding var selectedAirport: Airport?
     @State private var searchResults: [Airport] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
     
     var body: some View {
         NavigationStack {
@@ -284,10 +286,12 @@ struct AirportSearchView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
-                        TextField("Search airports...", text: $searchText)
+                        TextField("Enter IATA code", text: $searchText)
                             .foregroundColor(.white)
                             .onChange(of: searchText) { newValue in
-                                searchResults = AirportSearchManager.shared.searchAirports(query: newValue)
+                                Task {
+                                    await searchAirports(query: newValue)
+                                }
                             }
                     }
                     .padding()
@@ -295,25 +299,34 @@ struct AirportSearchView: View {
                     .cornerRadius(12)
                     .padding()
                     
-                    // Results list
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(searchResults) { airport in
-                                Button(action: {
-                                    selectedAirport = airport
-                                    presentationMode.wrappedValue.dismiss()
-                                }) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(airport.displayName)
-                                            .font(.headline)
-                                            .foregroundColor(.white)
-                                        Text(airport.fullLocation)
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else if let error = errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .padding()
+                    } else {
+                        // Results list
+                        ScrollView {
+                            LazyVStack(spacing: 0) {
+                                ForEach(searchResults) { airport in
+                                    Button(action: {
+                                        selectedAirport = airport
+                                        presentationMode.wrappedValue.dismiss()
+                                    }) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(airport.displayName)
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                            Text(airport.fullLocation)
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                        }
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(Color.white.opacity(0.05))
                                     }
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color.white.opacity(0.05))
                                 }
                             }
                         }
@@ -331,5 +344,24 @@ struct AirportSearchView: View {
                 }
             }
         }
+    }
+    
+    private func searchAirports(query: String) async {
+        guard !query.isEmpty else {
+            searchResults = []
+            return
+        }
+        
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            searchResults = try await AirportSearchManager.shared.searchAirports(query: query)
+        } catch {
+            errorMessage = "Failed to search airports: Invalid IATA code"
+            searchResults = []
+        }
+        
+        isLoading = false
     }
 } 

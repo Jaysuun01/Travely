@@ -19,35 +19,96 @@ struct Airport: Identifiable, Codable {
 class AirportSearchManager {
     static let shared = AirportSearchManager()
     private var airports: [Airport] = []
+    private let apiKey: String
+    private let baseURL = "https://api.api-ninjas.com/v1/airports"
     
     private init() {
-        loadAirports()
-    }
-    
-    private func loadAirports() {
-        // Load airports from a JSON file or API
-        // For now, we'll use a sample list of major airports
-        airports = [
-            Airport(id: "1", name: "John F. Kennedy International", code: "JFK", city: "New York", country: "USA"),
-            Airport(id: "2", name: "Los Angeles International", code: "LAX", city: "Los Angeles", country: "USA"),
-            Airport(id: "3", name: "Heathrow", code: "LHR", city: "London", country: "UK"),
-            Airport(id: "4", name: "Charles de Gaulle", code: "CDG", city: "Paris", country: "France"),
-            Airport(id: "5", name: "Narita International", code: "NRT", city: "Tokyo", country: "Japan"),
-            Airport(id: "6", name: "Dubai International", code: "DXB", city: "Dubai", country: "UAE"),
-            Airport(id: "7", name: "Singapore Changi", code: "SIN", city: "Singapore", country: "Singapore"),
-            Airport(id: "8", name: "Hong Kong International", code: "HKG", city: "Hong Kong", country: "China"),
-            Airport(id: "9", name: "Sydney Airport", code: "SYD", city: "Sydney", country: "Australia"),
-            Airport(id: "10", name: "San Francisco International", code: "SFO", city: "San Francisco", country: "USA")
-        ]
-    }
-    
-    func searchAirports(query: String) -> [Airport] {
-        let lowercasedQuery = query.lowercased()
-        return airports.filter { airport in
-            airport.name.lowercased().contains(lowercasedQuery) ||
-            airport.code.lowercased().contains(lowercasedQuery) ||
-            airport.city.lowercased().contains(lowercasedQuery) ||
-            airport.country.lowercased().contains(lowercasedQuery)
+        // Get API key from configuration
+        if let apiKey = Bundle.main.object(forInfoDictionaryKey: "AIRPORT_API_KEY") as? String {
+            self.apiKey = apiKey
+        } else {
+            fatalError("AIRPORT_API_KEY not found in configuration")
         }
     }
+    
+    func searchAirports(query: String) async throws -> [Airport] {
+        // If query is not exactly 3 characters, return empty array
+        guard query.count == 3 else { return [] }
+        
+        // Convert to uppercase for IATA code
+        let iataCode = query.uppercased()
+        
+        // URL encode the query to handle special characters
+        guard let encodedQuery = iataCode.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            throw URLError(.badURL)
+        }
+        
+        let urlString = "\(baseURL)?iata=\(encodedQuery)"
+        print("Requesting URL: \(urlString)") // Debug print
+        
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw URLError(.badServerResponse)
+            }
+            
+            print("HTTP Status Code: \(httpResponse.statusCode)")
+            
+            guard httpResponse.statusCode == 200 else {
+                if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    print("Error response: \(errorJson)")
+                }
+                throw URLError(.badServerResponse)
+            }
+            
+            // Print response for debugging
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("API Response: \(jsonString)")
+            }
+            
+            let decoder = JSONDecoder()
+            let airportDataArray = try decoder.decode([AirportData].self, from: data)
+            
+            // Convert the search results to Airport objects
+            return airportDataArray.map { airportData in
+                Airport(
+                    id: airportData.iata,
+                    name: airportData.name,
+                    code: airportData.iata,
+                    city: airportData.city,
+                    country: airportData.country
+                )
+            }
+        } catch {
+            print("Error fetching airport data: \(error)")
+            if let decodingError = error as? DecodingError {
+                print("Decoding error details: \(decodingError)")
+            }
+            throw error
+        }
+    }
+}
+
+// API Response structure for API Ninjas
+struct AirportData: Codable {
+    let name: String
+    let iata: String
+    let icao: String?
+    let city: String
+    let region: String?
+    let country: String
+    let elevation_ft: Int?
+    let latitude: Double?
+    let longitude: Double?
+    let timezone: String?
 } 

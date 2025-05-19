@@ -51,3 +51,6 @@ fastlane/test_output
 
 # Firebase
 GoogleService-Info.plist
+
+# Secrets
+Travely/Secrets.xcconfig

@@ -38,7 +38,7 @@ Travely is an iOS app for planning and sharing trips, with collaborative feature
 - **Xcode:** 15.0 or later
 - **iOS Deployment Target:** 16.0 or later
 - **Apple Developer Account:** Required for push notifications on real devices
-- **Swift Package Manager:** For Firebase SDK integration
+- **Swift Package Manager:** For [Firebase](https://github.com/firebase/firebase-ios-sdk) and [GoogleSignIn](https://github.com/google/GoogleSignIn-iOS) SDK integration
 
 ---
 
@@ -53,7 +53,7 @@ cd Travely
 
 ### 2. Install Dependencies
 
-- The app uses Firebase iOS SDK. You can use either CocoaPods or Swift Package Manager (SPM).
+- The app uses Firebase iOS and GoogleSignIn iOS SDKs. You can use either CocoaPods or Swift Package Manager (SPM).
 
 #### Using Swift Package Manager (Recommended):
 

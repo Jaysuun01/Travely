@@ -226,41 +226,12 @@ class NotificationManager: NSObject, ObservableObject {
                 }
                 let userId = document.documentID
                 
-                // Create notification content
-                let title = "New Trip Invitation"
-                let body = "You've been added as a collaborator to the trip '\(tripName)'"
-                let identifier = "trip-\(tripId)-collaborator-\(collaboratorEmail)"
-                
-                // Create a trigger for 1 minute from now
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
-                
-                // Create notification request
-                let content = UNMutableNotificationContent()
-                content.title = title
-                content.body = body
-                content.sound = .default
-                
-                let request = UNNotificationRequest(
-                    identifier: identifier,
-                    content: content,
-                    trigger: trigger
-                )
-                
-                // Schedule the delayed notification
-                UNUserNotificationCenter.current().add(request) { error in
-                    if let error = error {
-                        print("❌ Error scheduling delayed notification: \(error)")
-                    } else {
-                        print("✅ Delayed notification scheduled for collaborator: \(collaboratorEmail)")
-                    }
-                }
-                
-                // Add to Firestore for notification view (with delayed timestamp)
+                // Add to Firestore for notification view
                 let notification = AppNotification(
                     id: UUID().uuidString,
-                    title: title,
-                    message: body,
-                    date: Date().addingTimeInterval(60), // Add 1 minute to the timestamp
+                    title: "New Trip Invitation",
+                    message: "You've been added as a collaborator to the trip '\(tripName)'",
+                    date: Date(),
                     isRead: false
                 )
                 

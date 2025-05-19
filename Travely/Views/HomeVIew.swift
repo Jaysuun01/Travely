@@ -15,6 +15,10 @@ struct HomeView: View {
     
     private let db = Firestore.firestore()
     
+    // Add current user info
+    private var currentUserId: String? { Auth.auth().currentUser?.uid }
+    private var currentUserEmail: String? { Auth.auth().currentUser?.email }
+    
     var filteredTrips: [Trip] {
         if searchText.isEmpty {
             return trips
@@ -99,7 +103,7 @@ struct HomeView: View {
                                         HStack(spacing: 18) {
                                             ForEach(sharedTrips, id: \ .tripId) { trip in
                                                 NavigationLink(destination: TripDetailView(trip: trip, isShared: true)) {
-                                                    ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: true)
+                                                    ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: true, currentUserId: currentUserId, currentUserEmail: currentUserEmail)
                                                         .frame(minWidth: 0, maxWidth: .infinity)
                                                 }
                                                 .buttonStyle(PlainButtonStyle())
@@ -119,7 +123,7 @@ struct HomeView: View {
                                     SectionHeader(icon: "calendar.badge.clock", title: "Upcoming Trips", color: .blue)
                                     ForEach(upcomingTrips, id: \ .tripId) { trip in
                                         NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
-                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
+                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid, currentUserId: currentUserId, currentUserEmail: currentUserEmail)
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                         .transition(.opacity)
@@ -134,7 +138,7 @@ struct HomeView: View {
                                     SectionHeader(icon: "clock.arrow.circlepath", title: "Past Trips", color: .gray)
                                     ForEach(pastTrips, id: \ .tripId) { trip in
                                         NavigationLink(destination: TripDetailView(trip: trip, isShared: trip.ownerId != Auth.auth().currentUser?.uid)) {
-                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid)
+                                            ModernTripCard(trip: trip, onDelete: { deleteTrip(trip) }, isShared: trip.ownerId != Auth.auth().currentUser?.uid, currentUserId: currentUserId, currentUserEmail: currentUserEmail)
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                         .transition(.opacity)
@@ -340,6 +344,8 @@ struct ModernTripCard: View {
     let trip: Trip
     let onDelete: () -> Void
     let isShared: Bool
+    let currentUserId: String?
+    let currentUserEmail: String?
     let accentColor = Color(red: 0.97, green: 0.44, blue: 0.11)
     @State private var showDeleteConfirmation = false
     private let dateFormatter: DateFormatter = {
@@ -347,6 +353,15 @@ struct ModernTripCard: View {
         formatter.dateStyle = .medium
         return formatter
     }()
+    
+    // Owner badge logic
+    var showOwnerBadge: Bool {
+        guard let currentUserId = currentUserId, let currentUserEmail = currentUserEmail else { return false }
+        let isOwner = trip.ownerId == currentUserId
+        let isSharedToOthers = !trip.collaborators.isEmpty && trip.collaborators.contains(where: { $0 != currentUserEmail })
+        return isOwner && isSharedToOthers
+    }
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 14) {
@@ -424,6 +439,18 @@ struct ModernTripCard: View {
                     .cornerRadius(12)
                     .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
                     .padding(10)
+            }
+            // Owner badge
+            if showOwnerBadge {
+                Text("Owner")
+                    .font(.caption2.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(accentColor)
+                    .cornerRadius(12)
+                    .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
+                    .padding([.top, .trailing], 10)
             }
         }
         .padding(.horizontal, 2)

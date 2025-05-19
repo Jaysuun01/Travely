@@ -427,30 +427,48 @@ class AppViewModel: ObservableObject {
 
     func acceptTripInvitation(notification: AppNotification) {
         guard let user = Auth.auth().currentUser, let email = user.email else { return }
-        db.collection("trips").whereField("pendingInvites", arrayContains: email).getDocuments { snapshot, error in
+        let tripQuery = db.collection("trips").whereField("pendingInvites", arrayContains: email)
+        tripQuery.getDocuments { snapshot, error in
             guard let tripDoc = snapshot?.documents.first else {
                 self.deleteNotificationById(notification.id)
                 return
             }
             let tripId = tripDoc.documentID
             let userName = user.displayName ?? email
-            let data = tripDoc.data()
-            let pendingInvites = data["pendingInvites"] as? [String] ?? []
-            let collaborators = data["collaborators"] as? [String] ?? []
-            // Only proceed if user is still pending and not already a collaborator
-            guard pendingInvites.contains(email), !collaborators.contains(email) else {
-                self.deleteNotificationById(notification.id)
-                return
-            }
-            tripDoc.reference.updateData([
-                "pendingInvites": FieldValue.arrayRemove([email]),
-                "collaborators": FieldValue.arrayUnion([email])
-            ]) { err in
-                if let err = err {
-                    print("❌ Error accepting invitation: \(err)")
-                } else {
-                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) accepted your invitation to collaborate on trip '\(data["tripName"] as? String ?? "")'.")
+            let tripRef = self.db.collection("trips").document(tripId)
+            self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                let tripSnapshot: DocumentSnapshot
+                do {
+                    try tripSnapshot = transaction.getDocument(tripRef)
+                } catch let fetchError as NSError {
+                    errorPointer?.pointee = fetchError
+                    return nil
+                }
+                guard var pendingInvites = tripSnapshot.get("pendingInvites") as? [String],
+                      var collaborators = tripSnapshot.get("collaborators") as? [String],
+                      let tripName = tripSnapshot.get("tripName") as? String else {
+                    return nil
+                }
+                // Only proceed if user is still pending and not already a collaborator
+                if !pendingInvites.contains(email) || collaborators.contains(email) {
+                    return nil
+                }
+                // Update arrays
+                pendingInvites.removeAll { $0 == email }
+                collaborators.append(email)
+                transaction.updateData([
+                    "pendingInvites": pendingInvites,
+                    "collaborators": collaborators
+                ], forDocument: tripRef)
+                // Send notification to owner (outside transaction)
+                DispatchQueue.main.async {
+                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) accepted your invitation to collaborate on trip '\(tripName)'.")
                     self.deleteNotificationById(notification.id)
+                }
+                return nil
+            }) { (_, error) in
+                if let error = error {
+                    print("❌ Transaction error (accept):", error)
                 }
             }
         }
@@ -458,30 +476,46 @@ class AppViewModel: ObservableObject {
 
     func declineTripInvitation(notification: AppNotification) {
         guard let user = Auth.auth().currentUser, let email = user.email else { return }
-        db.collection("trips").whereField("pendingInvites", arrayContains: email).getDocuments { snapshot, error in
+        let tripQuery = db.collection("trips").whereField("pendingInvites", arrayContains: email)
+        tripQuery.getDocuments { snapshot, error in
             guard let tripDoc = snapshot?.documents.first else {
                 self.deleteNotificationById(notification.id)
                 return
             }
             let tripId = tripDoc.documentID
             let userName = user.displayName ?? email
-            let data = tripDoc.data()
-            let pendingInvites = data["pendingInvites"] as? [String] ?? []
-            let collaborators = data["collaborators"] as? [String] ?? []
-            // Only proceed if user is still pending and not already a collaborator
-            guard pendingInvites.contains(email), !collaborators.contains(email) else {
-                self.deleteNotificationById(notification.id)
-                return
-            }
-            tripDoc.reference.updateData([
-                "pendingInvites": FieldValue.arrayRemove([email])
-            ]) { err in
-                if let err = err {
-                    print("❌ Error declining invitation: \(err)")
-                } else {
-                    print("✅ Declined invitation and removed from pendingInvites.")
-                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) declined your invitation to collaborate on trip '\(data["tripName"] as? String ?? "")'.")
+            let tripRef = self.db.collection("trips").document(tripId)
+            self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                let tripSnapshot: DocumentSnapshot
+                do {
+                    try tripSnapshot = transaction.getDocument(tripRef)
+                } catch let fetchError as NSError {
+                    errorPointer?.pointee = fetchError
+                    return nil
+                }
+                guard var pendingInvites = tripSnapshot.get("pendingInvites") as? [String],
+                      let collaborators = tripSnapshot.get("collaborators") as? [String],
+                      let tripName = tripSnapshot.get("tripName") as? String else {
+                    return nil
+                }
+                // Only proceed if user is still pending and NOT already a collaborator
+                if !pendingInvites.contains(email) || collaborators.contains(email) {
+                    return nil
+                }
+                // Update arrays
+                pendingInvites.removeAll { $0 == email }
+                transaction.updateData([
+                    "pendingInvites": pendingInvites
+                ], forDocument: tripRef)
+                // Send notification to owner (outside transaction)
+                DispatchQueue.main.async {
+                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) declined your invitation to collaborate on trip '\(tripName)'.")
                     self.deleteNotificationById(notification.id)
+                }
+                return nil
+            }) { (_, error) in
+                if let error = error {
+                    print("❌ Transaction error (decline):", error)
                 }
             }
         }

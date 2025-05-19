@@ -54,3 +54,4 @@ GoogleService-Info.plist
 
 # Secrets
 Travely/Secrets.xcconfig
+Travely/GoogleService-Info.plist

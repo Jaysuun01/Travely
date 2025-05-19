@@ -159,22 +159,6 @@ class NotificationManager: NSObject, ObservableObject {
                 print("❌ Error scheduling notification: \(error)")
             } else {
                 print("✅ Notification scheduled for location: \(locationName) with identifier: \(identifier)")
-                // Add to Firestore for notification view
-                if let userId = Auth.auth().currentUser?.uid {
-                    let notification = AppNotification(
-                        id: UUID().uuidString,
-                        title: title,
-                        message: body,
-                        date: fireDate,
-                        isRead: false
-                    )
-                    do {
-                        let notificationData = try Firestore.Encoder().encode(notification)
-                        self.db.collection("users").document(userId).collection("notifications").document(notification.id).setData(notificationData)
-                    } catch {
-                        print("❌ Error saving notification to Firebase:", error)
-                    }
-                }
             }
         }
     }
@@ -220,6 +204,8 @@ class NotificationManager: NSObject, ObservableObject {
         let identifier = "location-\(locationId)-start"
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
     }
+
+   
 }
 
 extension Notification.Name {

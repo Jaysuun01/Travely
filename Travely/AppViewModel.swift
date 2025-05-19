@@ -112,6 +112,7 @@ class AppViewModel: ObservableObject {
             try Auth.auth().signOut()
             biometricEnabled = false
             verificationPromptSeen = false
+            notifications.removeAll() // Clear notifications on sign out
         } catch {
             print("❌ Error signing out:", error)
         }
@@ -397,6 +398,100 @@ class AppViewModel: ObservableObject {
             "fullName": user.displayName ?? "",
             "createdAt": FieldValue.serverTimestamp()
         ], merge: true)
+    }
+
+    func sendOwnerNotification(tripId: String, message: String) {
+        // Fetch the trip to get the ownerId and tripName
+        db.collection("trips").document(tripId).getDocument { snapshot, error in
+            guard let data = snapshot?.data(),
+                  let ownerId = data["ownerId"] as? String,
+                  let tripName = data["tripName"] as? String else { return }
+            // Only send if the current user is NOT the owner
+            if ownerId == Auth.auth().currentUser?.uid { return }
+            let notification = AppNotification(
+                id: UUID().uuidString,
+                title: "Collaboration Update",
+                message: message,
+                date: Date(),
+                isRead: false,
+                type: "collab-status"
+            )
+            do {
+                let notificationData = try Firestore.Encoder().encode(notification)
+                self.db.collection("users").document(ownerId).collection("notifications").document(notification.id).setData(notificationData)
+            } catch {
+                print("❌ Error sending owner notification: \(error)")
+            }
+        }
+    }
+
+    func acceptTripInvitation(notification: AppNotification) {
+        guard let user = Auth.auth().currentUser, let email = user.email else { return }
+        db.collection("trips").whereField("pendingInvites", arrayContains: email).getDocuments { snapshot, error in
+            guard let tripDoc = snapshot?.documents.first else {
+                self.deleteNotificationById(notification.id)
+                return
+            }
+            let tripId = tripDoc.documentID
+            let userName = user.displayName ?? email
+            let data = tripDoc.data()
+            let pendingInvites = data["pendingInvites"] as? [String] ?? []
+            let collaborators = data["collaborators"] as? [String] ?? []
+            // Only proceed if user is still pending and not already a collaborator
+            guard pendingInvites.contains(email), !collaborators.contains(email) else {
+                self.deleteNotificationById(notification.id)
+                return
+            }
+            tripDoc.reference.updateData([
+                "pendingInvites": FieldValue.arrayRemove([email]),
+                "collaborators": FieldValue.arrayUnion([email])
+            ]) { err in
+                if let err = err {
+                    print("❌ Error accepting invitation: \(err)")
+                } else {
+                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) accepted your invitation to collaborate on trip '\(data["tripName"] as? String ?? "")'.")
+                    self.deleteNotificationById(notification.id)
+                }
+            }
+        }
+    }
+
+    func declineTripInvitation(notification: AppNotification) {
+        guard let user = Auth.auth().currentUser, let email = user.email else { return }
+        db.collection("trips").whereField("pendingInvites", arrayContains: email).getDocuments { snapshot, error in
+            guard let tripDoc = snapshot?.documents.first else {
+                self.deleteNotificationById(notification.id)
+                return
+            }
+            let tripId = tripDoc.documentID
+            let userName = user.displayName ?? email
+            let data = tripDoc.data()
+            let pendingInvites = data["pendingInvites"] as? [String] ?? []
+            let collaborators = data["collaborators"] as? [String] ?? []
+            // Only proceed if user is still pending and not already a collaborator
+            guard pendingInvites.contains(email), !collaborators.contains(email) else {
+                self.deleteNotificationById(notification.id)
+                return
+            }
+            tripDoc.reference.updateData([
+                "pendingInvites": FieldValue.arrayRemove([email])
+            ]) { err in
+                if let err = err {
+                    print("❌ Error declining invitation: \(err)")
+                } else {
+                    print("✅ Declined invitation and removed from pendingInvites.")
+                    self.sendOwnerNotification(tripId: tripId, message: "\(userName) declined your invitation to collaborate on trip '\(data["tripName"] as? String ?? "")'.")
+                    self.deleteNotificationById(notification.id)
+                }
+            }
+        }
+    }
+
+    func deleteNotificationById(_ notificationId: String) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        db.collection("users").document(userId).collection("notifications").document(notificationId).delete()
+        // Update local state
+        notifications.removeAll { $0.id == notificationId }
     }
 
 }

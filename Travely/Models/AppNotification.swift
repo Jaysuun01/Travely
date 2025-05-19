@@ -6,6 +6,7 @@ struct AppNotification: Identifiable, Encodable, Decodable {
     let message: String
     let date: Date
     var isRead: Bool
+    var type: String? // e.g. "invitation", "reminder", etc.
     
     var minutesLeft: Int? {
         let interval = date.timeIntervalSince(Date())

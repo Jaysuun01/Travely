@@ -200,6 +200,7 @@ struct TripDetailView: View {
                 Picker("View", selection: $selectedTab) {
                     Text("Places").tag(0)
                     Text("Flights").tag(1)
+                    Text("Collaborators").tag(2)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
@@ -245,7 +246,7 @@ struct TripDetailView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 60)
                     }
-                } else {
+                } else if selectedTab == 1 {
                     // Flights tab
                     ScrollView {
                         VStack(spacing: 16) {
@@ -276,6 +277,77 @@ struct TripDetailView: View {
                         }
                         .padding(.vertical)
                     }
+                } else if selectedTab == 2 {
+                    // Collaborators tab
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Collaborators")
+                                .font(.title2.bold())
+                                .foregroundColor(.orange)
+                                .padding(.top, 8)
+                                .padding(.leading, 8)
+                            Divider()
+                                .background(Color.orange.opacity(0.5))
+                                .padding(.bottom, 8)
+                            if !trip.collaborators.isEmpty {
+                                ForEach(trip.collaborators, id: \ .self) { email in
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .foregroundColor(.orange)
+                                            .font(.system(size: 22))
+                                        Text(email)
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 14)
+                                    .background(Color.white.opacity(0.06))
+                                    .cornerRadius(12)
+                                    .padding(.bottom, 6)
+                                }
+                            }
+                            if trip.ownerId == Auth.auth().currentUser?.uid && !trip.pendingInvites.isEmpty {
+                                Text("Pending Invites")
+                                    .font(.headline)
+                                    .foregroundColor(.yellow)
+                                    .padding(.top, 18)
+                                    .padding(.leading, 8)
+                                ForEach(trip.pendingInvites, id: \ .self) { email in
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "envelope.badge")
+                                            .foregroundColor(.yellow)
+                                            .font(.system(size: 22))
+                                        Text(email)
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                        Spacer()
+                                        Text("Pending")
+                                            .font(.caption.bold())
+                                            .foregroundColor(.yellow)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 4)
+                                            .background(Color.yellow.opacity(0.18))
+                                            .cornerRadius(8)
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 14)
+                                    .background(Color.white.opacity(0.03))
+                                    .cornerRadius(12)
+                                    .padding(.bottom, 6)
+                                }
+                            }
+                            if trip.collaborators.isEmpty && (trip.pendingInvites.isEmpty || trip.ownerId != Auth.auth().currentUser?.uid) {
+                                Text("No collaborators yet.")
+                                    .foregroundColor(.gray)
+                                    .padding(.top, 24)
+                                    .padding(.leading, 8)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 24)
+                        .padding(.bottom, 60)
+                    }
                 }
             }
             
@@ -299,7 +371,7 @@ struct TripDetailView: View {
                                 .shadow(radius: 6)
                         }
                         .accessibilityLabel("Location Options")
-                    } else {
+                    } else if selectedTab == 1 {
                         Button(action: { showFlightForm = true }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.system(size: 48))
@@ -325,7 +397,7 @@ struct TripDetailView: View {
         }
         .sheet(isPresented: $showEdit) {
             EditTripView(trip: trip, onSave: { updatedTrip in
-                self.trip = updatedTrip
+                fetchLatestTrip()
             }, onDelete: { _ in
                 presentationMode.wrappedValue.dismiss()
             })
@@ -399,6 +471,20 @@ struct TripDetailView: View {
                 DispatchQueue.main.async {
                     self.flights.removeAll { $0.id == flight.id }
                 }
+            }
+        }
+    }
+    
+    private func fetchLatestTrip() {
+        db.collection("trips").document(trip.tripId).getDocument { snapshot, error in
+            guard let data = snapshot?.data() else { return }
+            do {
+                let updatedTrip = try Firestore.Decoder().decode(Trip.self, from: data)
+                DispatchQueue.main.async {
+                    self.trip = updatedTrip
+                }
+            } catch {
+                print("Error decoding updated trip: \(error)")
             }
         }
     }

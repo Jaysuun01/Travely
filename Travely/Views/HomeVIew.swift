@@ -425,6 +425,18 @@ struct ModernTripCard: View {
                     .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
                     .padding(10)
             }
+            // Owner badge
+            if trip.ownerId == Auth.auth().currentUser?.uid && !trip.collaborators.isEmpty {
+                Text("Owner")
+                    .font(.caption2.weight(.bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Color.blue)
+                    .cornerRadius(12)
+                    .shadow(color: .blue.opacity(0.3), radius: 4, x: 0, y: 2)
+                    .padding(10)
+            }
         }
         .padding(.horizontal, 2)
         .padding(.vertical, 4)

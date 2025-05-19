@@ -78,28 +78,70 @@ struct NotificationsView: View {
 
 struct NotificationCard: View {
     let notification: AppNotification
+    @EnvironmentObject var appViewModel: AppViewModel
+    @State private var actionInProgress = false
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(notification.isRead ? Color.gray.opacity(0.3) : Color.orange)
-                    .frame(width: 36, height: 36)
-                Image(systemName: notification.isRead ? "bell" : "bell.fill")
-                    .foregroundColor(.white)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(notification.type == "invitation" ? Color.blue : (notification.isRead ? Color.gray.opacity(0.3) : Color.orange))
+                        .frame(width: 36, height: 36)
+                    Image(systemName: notification.type == "invitation" ? "envelope.badge" : (notification.isRead ? "bell" : "bell.fill"))
+                        .foregroundColor(.white)
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(notification.title)
+                        .font(.headline)
+                        .foregroundColor(notification.isRead ? .gray : .primary)
+                    Text(notification.message)
+                        .font(.subheadline)
+                        .foregroundColor(notification.isRead ? .gray : .primary)
+                    if notification.type == "invitation" {
+                        Text("Trip Invitation")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                            .padding(.top, 2)
+                    }
+                    Text(notification.date.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
             }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(notification.title)
-                    .font(.headline)
-                    .foregroundColor(notification.isRead ? .gray : .primary)
-                Text(notification.message)
-                    .font(.subheadline)
-                    .foregroundColor(notification.isRead ? .gray : .primary)
-                Text(notification.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption)
-                    .foregroundColor(.gray)
+            .padding(.bottom, notification.type == "invitation" ? 0 : 8)
+            if notification.type == "invitation" {
+                HStack(spacing: 16) {
+                    Button(action: {
+                        actionInProgress = true
+                        appViewModel.acceptTripInvitation(notification: notification)
+                    }) {
+                        Text("Accept")
+                            .font(.subheadline.bold())
+                            .foregroundColor(.white)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 18)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                    }
+                    .disabled(actionInProgress)
+                    Button(action: {
+                        actionInProgress = true
+                        appViewModel.declineTripInvitation(notification: notification)
+                    }) {
+                        Text("Decline")
+                            .font(.subheadline.bold())
+                            .foregroundColor(.white)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 18)
+                            .background(Color.red)
+                            .cornerRadius(8)
+                    }
+                    .disabled(actionInProgress)
+                }
+                .padding(.top, 8)
             }
-            Spacer()
         }
         .padding()
         .background(

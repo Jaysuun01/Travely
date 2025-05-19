@@ -1,4 +1,3 @@
-
 import Foundation
 
 //struct Trip: Identifiable {
@@ -25,6 +24,7 @@ struct Trip: Identifiable, Codable {
     var locations: [Location] = []
     var createdAt: Date?
     var hasPendingWrites: Bool = false
+    var pendingInvites: [String] = []
 
     // Computed property for display
     var displayDate: String {
@@ -38,6 +38,6 @@ struct Trip: Identifiable, Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case tripId, tripName, destination, notes, startDate, endDate, ownerId, collaborators, locations, createdAt
+        case tripId, tripName, destination, notes, startDate, endDate, ownerId, collaborators, locations, createdAt, pendingInvites
     }
 }

@@ -285,7 +285,8 @@ struct EditTripView: View {
             "tripName": tripName,
             "destination": destination,
             "ownerId": trip.ownerId,
-            "collaborators": combined,
+            "collaborators": existingCollaborators,
+            "pendingInvites": collaborators,
             "notes": notes,
             "startDate": Timestamp(date: startDate),
             "endDate": Timestamp(date: endDate),
@@ -303,7 +304,7 @@ struct EditTripView: View {
                 trip.destination = destination
                 trip.startDate = startDate
                 trip.endDate = endDate
-                trip.collaborators = combined
+                trip.collaborators = existingCollaborators
                 trip.notes = notes
                 onSave?(trip)
                 // Reschedule notifications for all locations

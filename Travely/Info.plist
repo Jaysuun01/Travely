@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AIRPORT_API_KEY</key>
+	<string>$(AIRPORT_API_KEY)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -12,15 +14,6 @@
 				<string>com.googleusercontent.apps.97692141205-drvcmhc5ldqvtve56ghjbe33jm3uif5p</string>
 			</array>
 		</dict>
-	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Inter-VariableFont_opsz,wght.ttf</string>
-		<string>Inter-Italic-VariableFont_opsz,wght.ttf</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
@@ -37,7 +30,16 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inter-VariableFont_opsz,wght.ttf</string>
+		<string>Inter-Italic-VariableFont_opsz,wght.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>AIRPORT_API_KEY</key>
-	<string>$(AIRPORT_API_KEY)</string>
+    <string>$(AIRPORT_API_KEY)</string>
 </dict>
 </plist>

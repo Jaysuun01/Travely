@@ -388,5 +388,16 @@ class AppViewModel: ObservableObject {
         notifications.remove(atOffsets: indexSet)
     }
 
+    func ensureUserDocument() {
+        guard let user = Auth.auth().currentUser else { return }
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(user.uid)
+        userRef.setData([
+            "email": user.email ?? "",
+            "fullName": user.displayName ?? "",
+            "createdAt": FieldValue.serverTimestamp()
+        ], merge: true)
+    }
+
 }
 
